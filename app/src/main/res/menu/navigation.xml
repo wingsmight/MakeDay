@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bottom_navigation_my_days0"
+        android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+        android:title="@string/MyDays" />
+
+    <item
+        android:id="@+id/bottom_navigation_tracker1"
+        android:icon="@drawable/ic_watch_later_black_24dp"
+        android:title="@string/Tracker" />
+
+    <item
+        android:id="@+id/bottom_navigation_growth2"
+        android:icon="@drawable/ic_timeline_black_24dp"
+        android:title="@string/Growth" />
+
+    <item
+        android:id="@+id/bottom_navigation_menu3"
+        android:icon="@drawable/ic_toc_black_24dp"
+        android:title="@string/Menu" />
+
+</menu>
