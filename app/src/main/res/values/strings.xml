@@ -8,4 +8,9 @@
     <string name="Tracker">Трекер</string>
     <string name="Growth">Развитие</string>
     <string name="Menu">Меню</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="TimeTracking">Учёт времени</string>
+    <string name="Emotions">Эмоции</string>
 </resources>
