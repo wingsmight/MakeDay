@@ -3,5 +3,14 @@
     <color name="colorPrimary">#079466</color>
     <color name="colorPrimaryDark">#05724F</color>
     <color name="colorAccent">#05724F</color>
+
     <color name="colorBackground">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="lightGrey">#e4e4e4</color>
+    <color name="grey">#8b8b8b</color>
+    <color name="darkGrey">#696969</color>
+    <color name="white">#ffffff</color>
+
+    <color name="RowDayFeedDate">#079466</color>
 </resources>
