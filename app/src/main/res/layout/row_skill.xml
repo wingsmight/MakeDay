@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    >
+
+    <CheckBox
+        android:id="@+id/skillCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="18dp"
+        android:paddingStart="18dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:scaleX="1.70"
+        android:scaleY="1.70"
+        >
+
+    </CheckBox>
+
+    <TextView
+        android:id="@+id/skillName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="28sp"
+        android:text="Навык"
+        />
+
+</LinearLayout>

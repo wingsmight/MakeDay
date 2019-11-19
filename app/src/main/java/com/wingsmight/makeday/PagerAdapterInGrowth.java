@@ -20,12 +20,12 @@ public class PagerAdapterInGrowth extends FragmentPagerAdapter
         {
             case 0:
             {
-                fragment = new TasksTabFragment();
+                fragment = new SkillsTabFragment();
                 break;
             }
             case 1:
             {
-                fragment = new SkillsTabFragment();
+                fragment = new GoalsTabFragment();
                 break;
             }
         }
@@ -41,12 +41,12 @@ public class PagerAdapterInGrowth extends FragmentPagerAdapter
         {
             case 0:
             {
-                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Tasks);
+                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Skills);
                 break;
             }
             case 1:
             {
-                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Skills);
+                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Goals);
                 break;
             }
         }
