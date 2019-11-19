@@ -2,28 +2,33 @@ package com.wingsmight.makeday;
 
 import java.util.ArrayList;
 
-public class TimeTrackingDay
+public class TimeTrackingDay<TI>
 {
     private int day, year;
     private String month;
-    private ArrayList<Event> events;
+    private ArrayList<TI> timeIntervals;
 
-    public TimeTrackingDay(int day, String month, int year, ArrayList<Event> events)
+    public TimeTrackingDay(int day, String month, int year, ArrayList<TI> timeIntervals)
     {
         this.day = day;
         this.month = month;
         this.year = year;
-        this.events = events;
+        this.timeIntervals = timeIntervals;
     }
 
-    public ArrayList<Event> getEvents()
+    public void AddTimeInterval(TI timeInterval)
     {
-        return events;
+        timeIntervals.add(timeInterval);
     }
 
-    public void setEvents(ArrayList<Event> events)
+    public ArrayList<TI> getTimeIntervals()
     {
-        this.events = events;
+        return timeIntervals;
+    }
+
+    public void setTimeIntervals(ArrayList<TI> timeIntervals)
+    {
+        this.timeIntervals = timeIntervals;
     }
 
     public int getDay()

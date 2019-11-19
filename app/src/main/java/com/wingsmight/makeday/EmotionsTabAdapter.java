@@ -10,13 +10,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class TimeTrackingTabAdapter extends RecyclerView.Adapter<TimeTrackingTabAdapter.TimeTrackingDayViewHolder>
+public class EmotionsTabAdapter extends RecyclerView.Adapter<EmotionsTabAdapter.TimeTrackingDayViewHolder>
 {
     private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
-    private ArrayList<TimeTrackingDay> timeTrackingDays;
+    private ArrayList<TimeTrackingDay<EmotionEvent>> timeTrackingDays;
 
 
-    public TimeTrackingTabAdapter(ArrayList<TimeTrackingDay> timeTrackingDays)
+    public EmotionsTabAdapter(ArrayList<TimeTrackingDay<EmotionEvent>> timeTrackingDays)
     {
         this.timeTrackingDays = timeTrackingDays;
     }
@@ -34,7 +34,7 @@ public class TimeTrackingTabAdapter extends RecyclerView.Adapter<TimeTrackingTab
     @Override
     public void onBindViewHolder(@NonNull TimeTrackingDayViewHolder viewHolder, int i)
     {
-        final TimeTrackingDay timeTrackingDay = timeTrackingDays.get(i);
+        final TimeTrackingDay<EmotionEvent> timeTrackingDay = timeTrackingDays.get(i);
         viewHolder.eventsDate.setText(timeTrackingDay.getDay() + " " + timeTrackingDay.getMonth());
 
         // Create layout manager with initial prefetch item count
@@ -46,7 +46,7 @@ public class TimeTrackingTabAdapter extends RecyclerView.Adapter<TimeTrackingTab
         layoutManager.setInitialPrefetchItemCount(timeTrackingDay.getTimeIntervals().size());
 
         // Create sub item view adapter
-        EventAdapter subItemAdapter = new EventAdapter(timeTrackingDay.getTimeIntervals());
+        EmotionEventAdapter subItemAdapter = new EmotionEventAdapter(timeTrackingDay.getTimeIntervals());
 
         viewHolder.eventsRecyclerView.setLayoutManager(layoutManager);
         viewHolder.eventsRecyclerView.setAdapter(subItemAdapter);

@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder>
+public class EmotionEventAdapter extends RecyclerView.Adapter<EmotionEventAdapter.EventViewHolder>
 {
-    private ArrayList<Event> events;
+    private ArrayList<EmotionEvent> events;
 
-    public EventAdapter(ArrayList<Event> events)
+    public EmotionEventAdapter(ArrayList<EmotionEvent> events)
     {
         this.events = events;
     }
@@ -30,10 +30,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder viewHolder, int i)
     {
-        final Event event = events.get(i);
+        final EmotionEvent event = events.get(i);
 
         viewHolder.eventInterval.setText(event.getTimeInterval24());
-        viewHolder.eventDescription.setText(event.getEventText());
+        viewHolder.eventDescription.setText(event.getEmotion());
     }
 
     @Override

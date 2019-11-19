@@ -1,9 +1,23 @@
 package com.wingsmight.makeday;
 
-public class EmotionEvent extends Event
+public class EmotionEvent extends TimeInterval
 {
-    public EmotionEvent(int day, String month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String eventText)
+    String emotion;
+
+    public EmotionEvent(int day, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String emotion)
     {
-        super(day, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter, eventText);
+        super(day, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter);
+
+        this.emotion = emotion;
+    }
+
+    public String getEmotion()
+    {
+        return emotion;
+    }
+
+    public void setEmotion(String emotion)
+    {
+        this.emotion = emotion;
     }
 }
