@@ -3,6 +3,7 @@ package com.wingsmight.makeday;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,21 @@ public class GoalsTabFragment extends Fragment
         goals = FillRecyclerView();
         goalsTabAdapter = new GoalsTabAdapter(view.getContext(), goals);
         recyclerView.setAdapter(goalsTabAdapter);
+
+        FloatingActionButton addButton = view.findViewById(R.id.addGoalButton);
+        addButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                AddGoal();
+            }
+        });
+    }
+
+    private void AddGoal()
+    {
+
     }
 
     private ArrayList<Goal> FillRecyclerView()

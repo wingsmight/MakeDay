@@ -1,6 +1,9 @@
 package com.wingsmight.makeday;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,4 +20,24 @@ public class SkillsTabFragment extends Fragment
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        FloatingActionButton addButton = view.findViewById(R.id.addSkillButton);
+        addButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                AddSkill();
+            }
+        });
+    }
+
+    private void AddSkill()
+    {
+
+    }
 }
