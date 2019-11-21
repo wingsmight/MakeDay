@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+
+    <LinearLayout
+        android:id="@+id/skillsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true">
+
+        <CheckBox
+            android:id="@+id/genericSkillCheckBox"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:paddingLeft="18dp"
+            android:paddingStart="18dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            android:button="@null"
+            android:background="?android:attr/listChoiceIndicatorMultiple"
+            >
+
+        </CheckBox>
+
+        <TextView
+            android:id="@+id/genricSkillName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:text="Навык"
+            />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/skillsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="40dp"
+        android:paddingStart="40dp"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

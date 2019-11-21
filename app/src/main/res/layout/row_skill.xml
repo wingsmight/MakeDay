@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -10,24 +11,48 @@
 
     <CheckBox
         android:id="@+id/skillCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:paddingLeft="18dp"
         android:paddingStart="18dp"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:scaleX="1.70"
-        android:scaleY="1.70"
+        android:layout_gravity="center"
+        android:button="@null"
+        android:background="?android:attr/listChoiceIndicatorMultiple"
         >
 
     </CheckBox>
 
-    <TextView
-        android:id="@+id/skillName"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="28sp"
-        android:text="Навык"
-        />
+
+        >
+
+        <TextView
+            android:id="@+id/skillName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="24sp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:text="Навык"
+            />
+
+        <ImageView
+            android:id="@+id/skillInfo"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/ic_info_outline_black_24dp"
+            android:tint="@color/grey"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

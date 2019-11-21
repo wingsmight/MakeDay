@@ -8,7 +8,7 @@
     tools:context=".SkillsTabFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/goalsRecyclerView"
+        android:id="@+id/genericSkillRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
