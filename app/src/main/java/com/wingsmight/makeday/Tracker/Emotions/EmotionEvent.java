@@ -1,4 +1,6 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Tracker.Emotions;
+
+import com.wingsmight.makeday.Tracker.TimeInterval;
 
 public class EmotionEvent extends TimeInterval
 {

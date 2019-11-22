@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Growth.Skills;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 

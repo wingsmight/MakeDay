@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Tracker.TimeTracking;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wingsmight.makeday.Tracker.Event;
+import com.wingsmight.makeday.R;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class TimeTrackingTabFragment extends Fragment

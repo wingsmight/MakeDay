@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.MyDays;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.Tracker.RowDayModel;
 
 import java.util.ArrayList;
 

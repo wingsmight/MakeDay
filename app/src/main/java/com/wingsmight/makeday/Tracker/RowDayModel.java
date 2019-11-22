@@ -1,4 +1,7 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Tracker;
+
+import com.wingsmight.makeday.MainActivity;
+import com.wingsmight.makeday.R;
 
 public class RowDayModel
 {

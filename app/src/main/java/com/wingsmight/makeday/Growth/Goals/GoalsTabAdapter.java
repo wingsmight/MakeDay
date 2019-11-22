@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Growth.Goals;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,6 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Growth.Skills;
+
+import com.wingsmight.makeday.Growth.Skills.Skill;
 
 import java.util.ArrayList;
 

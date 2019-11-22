@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Growth.Skills;
 
 public class Skill
 {

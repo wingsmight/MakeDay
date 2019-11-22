@@ -1,13 +1,18 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Growth;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class PagerAdapterInTracker extends FragmentPagerAdapter
+import com.wingsmight.makeday.Growth.Goals.GoalsTabFragment;
+import com.wingsmight.makeday.MainActivity;
+import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.Growth.Skills.SkillsTabFragment;
+
+public class PagerAdapterInGrowth extends FragmentPagerAdapter
 {
 
-    public PagerAdapterInTracker(FragmentManager fm)
+    public PagerAdapterInGrowth(FragmentManager fm)
     {
         super(fm);
     }
@@ -20,12 +25,12 @@ public class PagerAdapterInTracker extends FragmentPagerAdapter
         {
             case 0:
             {
-                fragment = new TimeTrackingTabFragment();
+                fragment = new SkillsTabFragment();
                 break;
             }
             case 1:
             {
-                fragment = new EmotionsTabFragment();
+                fragment = new GoalsTabFragment();
                 break;
             }
         }
@@ -41,12 +46,12 @@ public class PagerAdapterInTracker extends FragmentPagerAdapter
         {
             case 0:
             {
-                pageTitle = MainActivity.GetContext().getResources().getString(R.string.TimeTracking);
+                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Skills);
                 break;
             }
             case 1:
             {
-                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Emotions);
+                pageTitle = MainActivity.GetContext().getResources().getString(R.string.Goals);
                 break;
             }
         }

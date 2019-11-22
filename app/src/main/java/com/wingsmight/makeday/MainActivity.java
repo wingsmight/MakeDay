@@ -8,6 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.wingsmight.makeday.Growth.GrowthFragment;
+import com.wingsmight.makeday.Menu.MenuFragment;
+import com.wingsmight.makeday.MyDays.MyDaysFragment;
+import com.wingsmight.makeday.Tracker.TrackerFragment;
+
 public class MainActivity extends AppCompatActivity
 {
     @Override

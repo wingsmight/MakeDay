@@ -1,4 +1,4 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Tracker;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,16 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class GrowthFragment extends Fragment
+import com.wingsmight.makeday.R;
+
+public class TrackerFragment extends Fragment
 {
-    private PagerAdapterInGrowth pagerAdapterInGrowth;
+    private PagerAdapterInTracker pagerAdapterInTracker;
     private ViewPager viewPager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_growth, container, false);
+        return inflater.inflate(R.layout.fragment_tracker, container, false);
     }
 
     @Override
@@ -30,10 +32,10 @@ public class GrowthFragment extends Fragment
 
     private void SetupTabLayout()
     {
-        pagerAdapterInGrowth = new PagerAdapterInGrowth(getChildFragmentManager());
+        pagerAdapterInTracker = new PagerAdapterInTracker(getChildFragmentManager());
 
         viewPager = getView().findViewById(R.id.view_pager);
-        viewPager.setAdapter(pagerAdapterInGrowth);
+        viewPager.setAdapter(pagerAdapterInTracker);
 
         TabLayout tabLayout = getView().findViewById(R.id.tracker_tabs);
         tabLayout.setupWithViewPager(viewPager);

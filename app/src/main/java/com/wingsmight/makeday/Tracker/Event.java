@@ -1,4 +1,6 @@
-package com.wingsmight.makeday;
+package com.wingsmight.makeday.Tracker;
+
+import com.wingsmight.makeday.Tracker.TimeInterval;
 
 public class Event extends TimeInterval
 {
