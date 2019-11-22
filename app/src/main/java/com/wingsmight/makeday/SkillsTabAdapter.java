@@ -1,5 +1,7 @@
 package com.wingsmight.makeday;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,101 +13,151 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListAdapter;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class SkillsTabAdapter extends RecyclerView.Adapter<SkillsTabAdapter.GenericSkillViewHolder>
+public class SkillsTabAdapter extends AnimatedExpandableListAdapter
 {
-    private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
-    private ArrayList<GenericSkill> genericSkills;
-    private SkillAdapter subItemAdapter;
+    Context context;
+    List<GenericSkill> listGroup;
+    HashMap<GenericSkill, List<Skill>> listItem;
 
 
-    public SkillsTabAdapter(ArrayList<GenericSkill> genericSkills)
+
+    public SkillsTabAdapter(Context context, List<GenericSkill> listGroup, HashMap<GenericSkill, List<Skill>> listItem)
     {
-        this.genericSkills = genericSkills;
-    }
-
-    @NonNull
-    @Override
-    public GenericSkillViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
-    {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_generic_skill, viewGroup, false);
-        GenericSkillViewHolder viewHolder = new GenericSkillViewHolder(view);
-
-        return viewHolder;
+        this.context = context;
+        this.listGroup = listGroup;
+        this.listItem = listItem;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull GenericSkillViewHolder viewHolder, int i)
+    public View getRealChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
     {
-        final GenericSkill genericSkill = genericSkills.get(i);
-        viewHolder.name.setText(genericSkill.getName());
-
-        // Create layout manager with initial prefetch item count
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
-                viewHolder.subSkills.getContext(),
-                LinearLayoutManager.VERTICAL,
-                false
-        );
-        layoutManager.setInitialPrefetchItemCount(genericSkill.getSkills().size());
-
-        // Create sub item view adapter
-        subItemAdapter = new SkillAdapter(genericSkill.getSkills());
-
-        viewHolder.subSkills.setLayoutManager(layoutManager);
-        viewHolder.subSkills.setAdapter(subItemAdapter);
-        viewHolder.subSkills.setRecycledViewPool(viewPool);
-
-        boolean isExpanded = genericSkill.isChecked();
-        viewHolder.subSkills.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public int getItemCount() {
-        return genericSkills.size();
-    }
-
-    public class GenericSkillViewHolder extends  RecyclerView.ViewHolder
-    {
-        private TextView name;
-        private RecyclerView subSkills;
-        private LinearLayout skillsHeader;
-        private CheckBox checkBox;
-        //private LinearLayout expandableLayout;
-
-        public GenericSkillViewHolder(@NonNull View itemView)
+        if(convertView == null)
         {
-            super(itemView);
+            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.row_skill, null);
+        }
 
-            name = itemView.findViewById(R.id.genricSkillName);
-            subSkills = itemView.findViewById(R.id.skillsRecyclerView);
-            skillsHeader = itemView.findViewById(R.id.skillsHeader);
-            checkBox = itemView.findViewById(R.id.genericSkillCheckBox);
+        String skillName = ((Skill)getChild(groupPosition, childPosition)).getName();
 
-            skillsHeader.setOnClickListener(new View.OnClickListener()
+        TextView textView = convertView.findViewById(R.id.skillName);
+        textView.setText(skillName);
+
+        boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
+        CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
+        checkBox.setTag(new int[]{groupPosition, childPosition});
+        checkBox.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
             {
-                @Override
-                public void onClick(View v)
+                switch(v.getId())
                 {
-                    GenericSkill clickedSkill = genericSkills.get(getAdapterPosition());
-                    clickedSkill.setChecked(!clickedSkill.isChecked());
-                    notifyItemChanged(getAdapterPosition());
-                }
-            });
-
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    GenericSkill clickedSkill = genericSkills.get(getAdapterPosition());
-                    clickedSkill.setChecked(isChecked);
-                    notifyItemChanged(getAdapterPosition());
-
-                    ArrayList<Skill> clickedSubskills = clickedSkill.getSkills();
-                    for (Skill skill : clickedSubskills)
+                    case R.id.skillCheckBox:
                     {
-                        subItemAdapter.Update();
+                        CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
+                        int[] pos = (int[]) checkBox1.getTag();
+                        ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
+                        notifyDataSetChanged();
+                        break;
                     }
                 }
-            });
+            }
+        });
+        checkBox.setChecked(skillChecked);
+
+        return convertView;
+    }
+
+    @Override
+    public int getRealChildrenCount(int groupPosition)
+    {
+        return listItem.get(listGroup.get(groupPosition)).size();
+    }
+
+    @Override
+    public int getGroupCount()
+    {
+        return listGroup.size();
+    }
+
+    @Override
+    public Object getGroup(int groupPosition)
+    {
+        return listGroup.get(groupPosition);
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition)
+    {
+        return listItem.get(listGroup.get(groupPosition)).get(childPosition);
+    }
+
+    @Override
+    public long getGroupId(int groupPosition)
+    {
+        return groupPosition;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition)
+    {
+        return childPosition;
+    }
+
+    @Override
+    public boolean hasStableIds()
+    {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
+    {
+        if(convertView == null)
+        {
+            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.row_generic_skill, null);
         }
+
+        String group = ((GenericSkill)getGroup(groupPosition)).getName();
+        TextView textView = convertView.findViewById(R.id.genericSkillName);
+        textView.setText(group);
+
+        /////////////////////
+        CheckBox checkBox = convertView.findViewById(R.id.genericSkillCheckBox);
+        checkBox.setTag(groupPosition);
+        checkBox.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                switch(v.getId())
+                {
+                    case R.id.genericSkillCheckBox:
+                    {
+                        int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
+                        ((GenericSkill) getGroup(pos)).setChecked(((CheckBox) v).isChecked());
+                        notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+        });
+        checkBox.setChecked(((GenericSkill) getGroup(groupPosition)).isChecked());
+        ////////////////////
+
+        return convertView;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition)
+    {
+        return true;
     }
 }

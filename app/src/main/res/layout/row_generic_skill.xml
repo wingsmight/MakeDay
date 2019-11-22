@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:clickable="true"
-        android:focusable="true">
+        >
 
         <CheckBox
             android:id="@+id/genericSkillCheckBox"
@@ -26,12 +25,13 @@
             android:layout_gravity="center"
             android:button="@null"
             android:background="?android:attr/listChoiceIndicatorMultiple"
+            android:focusable="false"
             >
 
         </CheckBox>
 
         <TextView
-            android:id="@+id/genricSkillName"
+            android:id="@+id/genericSkillName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="28sp"
@@ -41,15 +41,5 @@
             />
 
     </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/skillsRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="40dp"
-        android:paddingStart="40dp"
-        >
-
-    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>
