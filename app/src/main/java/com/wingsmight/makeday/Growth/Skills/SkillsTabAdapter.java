@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListAdapter;
 import com.wingsmight.makeday.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,15 +18,14 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
 {
     Context context;
     List<GenericSkill> listGroup;
-    HashMap<GenericSkill, List<Skill>> listItem;
+    //HashMap<int, List<Skill>> listItem;
 
 
 
-    public SkillsTabAdapter(Context context, List<GenericSkill> listGroup, HashMap<GenericSkill, List<Skill>> listItem)
+    public SkillsTabAdapter(Context context, List<GenericSkill> listGroup)
     {
         this.context = context;
         this.listGroup = listGroup;
-        this.listItem = listItem;
     }
 
     @Override
@@ -71,7 +71,15 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
     @Override
     public int getRealChildrenCount(int groupPosition)
     {
-        return listItem.get(listGroup.get(groupPosition)).size();
+        ArrayList<Skill> skills = listGroup.get(groupPosition).getSkills();
+        if(skills == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return skills.size();
+        }
     }
 
     @Override
@@ -89,7 +97,7 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
     @Override
     public Object getChild(int groupPosition, int childPosition)
     {
-        return listItem.get(listGroup.get(groupPosition)).get(childPosition);
+        return listGroup.get(groupPosition).getSkills().get(childPosition);
     }
 
     @Override
@@ -119,11 +127,12 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             convertView = layoutInflater.inflate(R.layout.row_generic_skill, null);
         }
 
+        //
         String group = ((GenericSkill)getGroup(groupPosition)).getName();
         TextView textView = convertView.findViewById(R.id.genericSkillName);
         textView.setText(group);
 
-        /////////////////////
+        //
         CheckBox checkBox = convertView.findViewById(R.id.genericSkillCheckBox);
         checkBox.setTag(groupPosition);
         checkBox.setOnClickListener(new View.OnClickListener()
@@ -144,7 +153,19 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             }
         });
         checkBox.setChecked(((GenericSkill) getGroup(groupPosition)).isChecked());
-        ////////////////////
+
+        //
+        ArrayList<Skill> skills = ((GenericSkill) getGroup(groupPosition)).getSkills();
+        boolean isAllChecked = true;
+        for (Skill skill : skills)
+        {
+            if(!skill.isChecked())
+            {
+                isAllChecked = false;
+                break;
+            }
+        }
+        checkBox.setChecked(isAllChecked);
 
         return convertView;
     }
@@ -153,5 +174,10 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
     public boolean isChildSelectable(int groupPosition, int childPosition)
     {
         return true;
+    }
+
+    public void addGenericSkill(GenericSkill newGenericSkill)
+    {
+        listGroup.add(newGenericSkill);
     }
 }

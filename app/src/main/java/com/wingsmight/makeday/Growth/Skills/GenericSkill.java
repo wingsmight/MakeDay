@@ -47,9 +47,12 @@ public class GenericSkill
     public void setChecked(boolean checked)
     {
         isChecked = checked;
-        for (Skill skill : skills)
+        if(skills != null)
         {
-            skill.setChecked(checked);
+            for (Skill skill : skills)
+            {
+                skill.setChecked(checked);
+            }
         }
     }
 
