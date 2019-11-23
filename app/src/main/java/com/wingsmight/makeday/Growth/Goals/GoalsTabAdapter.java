@@ -59,4 +59,14 @@ public class GoalsTabAdapter extends RecyclerView.Adapter<GoalsTabAdapter.MyDays
             serialNumber = itemView.findViewById(R.id.goalSerialNumber);
         }
     }
+
+    public void addGoal(Goal newGoal)
+    {
+        goals.add(newGoal);
+    }
+
+    public int getGoalsCount()
+    {
+        return goals.size();
+    }
 }
