@@ -38,12 +38,11 @@
             android:id="@+id/newGoalInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:minLines="1"
             android:maxLines="1"
             android:singleLine="true"
-            android:focusedByDefault="true"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
             android:imeOptions="actionDone"
             android:imeActionLabel="Готово"
             />

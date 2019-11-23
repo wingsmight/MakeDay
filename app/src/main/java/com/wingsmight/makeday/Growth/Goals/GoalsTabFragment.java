@@ -1,7 +1,8 @@
 package com.wingsmight.makeday.Growth.Goals;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
@@ -11,15 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
-import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
@@ -63,6 +61,7 @@ public class GoalsTabFragment extends Fragment
     BlurPopupWindow blurPopupWindow;
     private void AddGoal(View view)
     {
+        //Show blur popup
         blurPopupWindow = new BlurPopupWindow.Builder(view.getContext())
                 .setContentView(R.layout.add_goal_dialog)
                 .bindClickListener(new View.OnClickListener() {
@@ -77,10 +76,10 @@ public class GoalsTabFragment extends Fragment
                 .setBlurRadius(10)
                 .setTintColor(0x30000000)
                 .build();
-
         blurPopupWindow.show();
 
-        TextInputEditText inputEditText = blurPopupWindow.findViewById(R.id.newGoalInput);
+        //Enter button -> add goal
+        final TextInputEditText inputEditText = blurPopupWindow.findViewById(R.id.newGoalInput);
         inputEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -92,6 +91,15 @@ public class GoalsTabFragment extends Fragment
                 return true;
             }
         });
+
+        //Show keyboard
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+
+                inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN , 0, 0, 0));
+                inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
+            }
+        }, 1000);
     }
 
     private void AddGoalFromInput(TextInputEditText inputEditText)
