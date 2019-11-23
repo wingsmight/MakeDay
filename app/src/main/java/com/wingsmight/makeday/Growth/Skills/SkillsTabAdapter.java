@@ -1,12 +1,16 @@
 package com.wingsmight.makeday.Growth.Skills;
 
 import android.content.Context;
+import android.support.design.widget.TextInputEditText;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListAdapter;
 import com.wingsmight.makeday.R;
 
@@ -64,6 +68,31 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             }
         });
         checkBox.setChecked(skillChecked);
+
+        ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
+        skillInfo.setOnClickListener(new View.OnClickListener()
+        {
+            BlurPopupWindow blurPopupWindow;
+            @Override
+            public void onClick(View view)
+            {
+                //Show blur popup
+                blurPopupWindow = new BlurPopupWindow.Builder(view.getContext())
+                        .setContentView(R.layout.skill_info_dialog)
+                        .bindClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                blurPopupWindow.dismiss();
+                            }
+                        }, R.id.closeSkillInfo)
+                        .setGravity(Gravity.CENTER_HORIZONTAL)
+                        .setScaleRatio(0.2f)
+                        .setBlurRadius(10)
+                        .setTintColor(0x30000000)
+                        .build();
+                blurPopupWindow.show();
+            }
+        });
 
         return convertView;
     }

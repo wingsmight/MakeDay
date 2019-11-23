@@ -18,4 +18,5 @@
     <string name="Undone">Не сделано</string>
     <string name="addNewSkill">Добавить новый навык</string>
     <string name="addNewGoal">Добавить новую цель</string>
+    <string name="SubSkillInfoDescription">Объяснение\n...\n...</string>
 </resources>
