@@ -127,12 +127,14 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             convertView = layoutInflater.inflate(R.layout.row_generic_skill, null);
         }
 
-        //
-        String group = ((GenericSkill)getGroup(groupPosition)).getName();
-        TextView textView = convertView.findViewById(R.id.genericSkillName);
-        textView.setText(group);
+        GenericSkill currentGenericSkill = (GenericSkill)getGroup(groupPosition);
 
-        //
+        //Set name
+        String genericSkillName = currentGenericSkill.getName();
+        TextView textView = convertView.findViewById(R.id.genericSkillName);
+        textView.setText(genericSkillName);
+
+        //Init checkboxes
         CheckBox checkBox = convertView.findViewById(R.id.genericSkillCheckBox);
         checkBox.setTag(groupPosition);
         checkBox.setOnClickListener(new View.OnClickListener()
@@ -152,10 +154,9 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
                 }
             }
         });
-        checkBox.setChecked(((GenericSkill) getGroup(groupPosition)).isChecked());
 
-        //
-        ArrayList<Skill> skills = ((GenericSkill) getGroup(groupPosition)).getSkills();
+        //Set checkbox
+        ArrayList<Skill> skills = currentGenericSkill.getSkills();
         boolean isAllChecked = true;
         for (Skill skill : skills)
         {
@@ -164,6 +165,11 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
                 isAllChecked = false;
                 break;
             }
+        }
+
+        if(isAllChecked)
+        {
+            currentGenericSkill.setChecked(true);
         }
         checkBox.setChecked(isAllChecked);
 
