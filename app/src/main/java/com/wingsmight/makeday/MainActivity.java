@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.wingsmight.makeday.Growth.GrowthFragment;
 import com.wingsmight.makeday.Menu.MenuFragment;
 import com.wingsmight.makeday.MyDays.MyDaysFragment;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.Tracker.TrackerFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -73,9 +74,6 @@ public class MainActivity extends AppCompatActivity
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyDaysFragment()).commit();
     }
-
-
-
 
     private static Context context;
     public static Context GetContext()

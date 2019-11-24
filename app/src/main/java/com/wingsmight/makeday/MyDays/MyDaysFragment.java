@@ -11,14 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
+import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.Tracker.RowDayModel;
 
 import java.util.ArrayList;
 
 public class MyDaysFragment extends Fragment
 {
+    TabName tabName = TabName.MY_DAYS;
     RecyclerView recyclerView;
-    ArrayList<RowDayModel> rowDayModels = new ArrayList<>();
+    ArrayList<RowDayModel> days = new ArrayList<>();
     MyDaysAdapter myDaysAdapter;
 
     @Nullable
@@ -36,10 +39,28 @@ public class MyDaysFragment extends Fragment
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        myDaysAdapter = new MyDaysAdapter(view.getContext(), rowDayModels);
-        recyclerView.setAdapter(myDaysAdapter);
+        //FillRecyclerView();
+        days = SaveLoad.load(tabName);
 
-        FillRecyclerView();
+        myDaysAdapter = new MyDaysAdapter(view.getContext(), days);
+        recyclerView.setAdapter(myDaysAdapter);
+    }
+
+    private void backgroundSave(){
+        Thread backgroundThread = new Thread() {
+            @Override
+            public void run()
+            {
+                SaveLoad.save(tabName, days);
+            }
+        };
+        backgroundThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundSave();
     }
 
     private void FillRecyclerView()
@@ -52,7 +73,7 @@ public class MyDaysFragment extends Fragment
                 "дело 3"
         };
         RowDayModel rowDayModel = new RowDayModel(16, "ноября", 2019, doneDeals, undoneDeals);
-        rowDayModels.add(rowDayModel);
+        days.add(rowDayModel);
 
         String[] doneDeals2 = {
                 "дело 1"
@@ -62,13 +83,13 @@ public class MyDaysFragment extends Fragment
                 "дело 3"
         };
         RowDayModel rowDayModel2 = new RowDayModel(15, "ноября", 2019, doneDeals2, undoneDeals2);
-        rowDayModels.add(rowDayModel2);
+        days.add(rowDayModel2);
 
-        rowDayModels.add(rowDayModel2);
-        rowDayModels.add(rowDayModel2);
-        rowDayModels.add(rowDayModel2);
-        rowDayModels.add(rowDayModel2);
-        rowDayModels.add(rowDayModel2);
-        rowDayModels.add(rowDayModel2);
+        days.add(rowDayModel2);
+        days.add(rowDayModel2);
+        days.add(rowDayModel2);
+        days.add(rowDayModel2);
+        days.add(rowDayModel2);
+        days.add(rowDayModel2);
     }
 }

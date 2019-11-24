@@ -21,6 +21,8 @@ import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListView;
 import com.wingsmight.makeday.Growth.Goals.Goal;
 import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
+import com.wingsmight.makeday.TabName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +32,11 @@ import java.util.List;
 public class SkillsTabFragment extends Fragment implements ExpandableListView.OnGroupClickListener, ExpandableListView.OnChildClickListener,
         ExpandableListView.OnGroupExpandListener
 {
+    TabName tabName = TabName.SKILLS;
     private AnimatedExpandableListView mExpandableListView;
     private SkillsTabAdapter mExpandableListAdapter;
     private int lastExpandedPosition = -1;
+    ArrayList<GenericSkill> genericSkills;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -57,7 +61,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         });
 
         //Expandable list
-        ArrayList<GenericSkill> genericSkills = initGenericSkills();
+        genericSkills = SaveLoad.load(tabName);//initGenericSkills();
 
         mExpandableListView = view.findViewById(R.id.expandable_lst);
         mExpandableListAdapter = new SkillsTabAdapter(getContext(), genericSkills);
@@ -65,6 +69,23 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         mExpandableListView.setOnGroupClickListener(this);
         mExpandableListView.setOnChildClickListener(this);
         mExpandableListView.setOnGroupExpandListener(this);
+    }
+
+    private void backgroundSave(){
+        Thread backgroundThread = new Thread() {
+            @Override
+            public void run()
+            {
+                SaveLoad.save(tabName, genericSkills);
+            }
+        };
+        backgroundThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundSave();
     }
 
     @Override

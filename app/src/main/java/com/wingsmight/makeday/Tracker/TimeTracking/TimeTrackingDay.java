@@ -4,11 +4,10 @@ import java.util.ArrayList;
 
 public class TimeTrackingDay<TI>
 {
-    private int day, year;
-    private String month;
+    private int day, month, year;
     private ArrayList<TI> timeIntervals;
 
-    public TimeTrackingDay(int day, String month, int year, ArrayList<TI> timeIntervals)
+    public TimeTrackingDay(int day, int month, int year, ArrayList<TI> timeIntervals)
     {
         this.day = day;
         this.month = month;
@@ -53,11 +52,73 @@ public class TimeTrackingDay<TI>
 
     public String getMonth()
     {
-        return month;
+        switch (month)
+        {
+            case 1:
+            {
+                return "Январь";
+            }
+            case 2:
+            {
+                return "Февраль";
+            }
+            case 3:
+            {
+                return "Март";
+            }
+            case 4:
+            {
+                return "Апрель";
+            }
+            case 5:
+            {
+                return "Май";
+            }
+            case 6:
+            {
+                return "Июнь";
+            }
+            case 7:
+            {
+                return "Июль";
+            }
+            case 8:
+            {
+                return "Август";
+            }
+            case 9:
+            {
+                return "Сентябрь";
+            }
+            case 10:
+            {
+                return "Октябрь";
+            }
+            case 11:
+            {
+                return "Ноябрь";
+            }
+            case 12:
+            {
+                return "Декабрь";
+            }
+            default:
+            {
+                return "???";
+            }
+        }
     }
 
-    public void setMonth(String month)
+    public void setMonth(int month) throws Exception
     {
-        this.month = month;
+        if(month >= 1 && month <= 12)
+        {
+            this.month = month;
+        }
+        else
+        {
+            throw new Exception("IncorrectMonthNumber");
+        }
+
     }
 }

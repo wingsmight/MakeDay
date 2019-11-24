@@ -10,16 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
+import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.Tracker.Event;
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 public class TimeTrackingTabFragment extends Fragment
 {
+    TabName tabName = TabName.TIME_TRACKING;
     RecyclerView recyclerView;
-    ArrayList<TimeTrackingDay> TimeTrackingDays = new ArrayList<>();
+    ArrayList<TimeTrackingDay> timeTrackingDays = new ArrayList<>();
     TimeTrackingTabAdapter timeTrackingTabAdapter;
 
     @Override
@@ -36,24 +40,33 @@ public class TimeTrackingTabFragment extends Fragment
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        TimeTrackingDays = buildItemList();
-        timeTrackingTabAdapter = new TimeTrackingTabAdapter(TimeTrackingDays);
+        timeTrackingDays = SaveLoad.load(tabName);//buildItemList();
+        //SaveLoad.save(tabName, timeTrackingDays);
+        timeTrackingTabAdapter = new TimeTrackingTabAdapter(timeTrackingDays);
         recyclerView.setAdapter(timeTrackingTabAdapter);
+    }
+
+    private void backgroundSave(){
+        Thread backgroundThread = new Thread() {
+            @Override
+            public void run()
+            {
+                SaveLoad.save(tabName, timeTrackingDays);
+            }
+        };
+        backgroundThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundSave();
     }
 
     private ArrayList<TimeTrackingDay> buildItemList() {
         ArrayList<TimeTrackingDay> itemList = new ArrayList<>();
         for (int i=1; i<10; i++) {
-            TimeTrackingDay<Event> item = new TimeTrackingDay<Event>(i, "ноябрь", 2019, buildSubItemList());
-
-//            ArrayList<Event> events = buildSubItemList();
-//            for (Event event : events)
-//            {
-//                item.AddTimeInterval(event);
-//            }
-//
-//            List<Event> eventList = buildSubItemList();
-//            item = new TimeTrackingDay(i, "ноябрь", 2019, eventList);
+            TimeTrackingDay<Event> item = new TimeTrackingDay<Event>(i, 11, 2019, buildSubItemList());
             itemList.add(item);
         }
         return itemList;
@@ -67,6 +80,7 @@ public class TimeTrackingTabFragment extends Fragment
             Event subItem = new Event(i, 11, 2019, i, 0, i+1, 0, "Пример");
             subItemList.add(subItem);
         }
+
         return subItemList;
     }
 }

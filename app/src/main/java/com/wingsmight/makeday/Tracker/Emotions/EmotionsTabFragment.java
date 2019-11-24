@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
+import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.Tracker.TimeTracking.TimeTrackingDay;
 
 import java.util.ArrayList;
@@ -19,8 +21,9 @@ import java.util.Random;
 
 public class EmotionsTabFragment extends Fragment
 {
+    TabName tabName = TabName.EMOTIONS;
     RecyclerView recyclerView;
-    ArrayList<TimeTrackingDay<EmotionEvent>> TimeTrackingDays = new ArrayList<TimeTrackingDay<EmotionEvent>>();
+    ArrayList<TimeTrackingDay<EmotionEvent>> timeTrackingDays = new ArrayList<TimeTrackingDay<EmotionEvent>>();
     EmotionsTabAdapter emotionsTabAdapter;
 
     @Override
@@ -37,15 +40,32 @@ public class EmotionsTabFragment extends Fragment
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        TimeTrackingDays = buildItemList();
-        emotionsTabAdapter = new EmotionsTabAdapter(TimeTrackingDays);
+        timeTrackingDays = SaveLoad.load(tabName);// buildItemList();
+        emotionsTabAdapter = new EmotionsTabAdapter(timeTrackingDays);
         recyclerView.setAdapter(emotionsTabAdapter);
+    }
+
+    private void backgroundSave(){
+        Thread backgroundThread = new Thread() {
+            @Override
+            public void run()
+            {
+                SaveLoad.save(tabName, timeTrackingDays);
+            }
+        };
+        backgroundThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundSave();
     }
 
     private ArrayList<TimeTrackingDay<EmotionEvent>> buildItemList() {
         ArrayList<TimeTrackingDay<EmotionEvent>> itemList = new ArrayList<>();
         for (int i=1; i<10; i++) {
-            TimeTrackingDay<EmotionEvent> item = new TimeTrackingDay<EmotionEvent>(i, "ноябрь", 2019, buildSubItemList());
+            TimeTrackingDay<EmotionEvent> item = new TimeTrackingDay<EmotionEvent>(i, 12, 2019, buildSubItemList());
             itemList.add(item);
         }
         return itemList;

@@ -19,13 +19,17 @@ import android.widget.TextView;
 
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 import com.wingsmight.makeday.R;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
+import com.wingsmight.makeday.TabName;
 
 import java.util.ArrayList;
 
 public class GoalsTabFragment extends Fragment
 {
+    TabName tabName = TabName.GOALS;
     RecyclerView recyclerView;
     GoalsTabAdapter goalsTabAdapter;
+    ArrayList<Goal> goals;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -43,7 +47,9 @@ public class GoalsTabFragment extends Fragment
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        ArrayList<Goal> goals = FillRecyclerView();
+        // = FillRecyclerView();
+        goals = SaveLoad.load(tabName);
+
         goalsTabAdapter = new GoalsTabAdapter(view.getContext(), goals);
         recyclerView.setAdapter(goalsTabAdapter);
 
@@ -56,6 +62,23 @@ public class GoalsTabFragment extends Fragment
                 AddGoal(view);
             }
         });
+    }
+
+    private void backgroundSave(){
+        Thread backgroundThread = new Thread() {
+            @Override
+            public void run()
+            {
+                SaveLoad.save(tabName, goals);
+            }
+        };
+        backgroundThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        backgroundSave();
     }
 
     BlurPopupWindow blurPopupWindow;

@@ -187,19 +187,24 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         //Set checkbox
         ArrayList<Skill> skills = currentGenericSkill.getSkills();
         boolean isAllChecked = true;
-        for (Skill skill : skills)
+        if(skills != null && skills.size() != 0)
         {
-            if(!skill.isChecked())
+            for (Skill skill : skills)
             {
-                isAllChecked = false;
-                break;
+                if(!skill.isChecked())
+                {
+                    isAllChecked = false;
+                    break;
+                }
+            }
+
+            if(isAllChecked)
+            {
+                currentGenericSkill.setChecked(true);
             }
         }
 
-        if(isAllChecked)
-        {
-            currentGenericSkill.setChecked(true);
-        }
+
         checkBox.setChecked(isAllChecked);
 
         return convertView;
