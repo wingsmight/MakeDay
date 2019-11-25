@@ -8,15 +8,12 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <include
+        layout="@layout/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </FrameLayout>
+        />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -26,9 +23,6 @@
         android:foregroundGravity="bottom"
         android:background="?android:attr/windowBackground"
         app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/fragment_container"
-        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigation" />
 
 
