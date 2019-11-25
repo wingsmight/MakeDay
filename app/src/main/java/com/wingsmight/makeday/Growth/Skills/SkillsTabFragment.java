@@ -119,23 +119,6 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         lastExpandedPosition = groupPosition;
     }
 
-    private ArrayList<GenericSkill> initGenericSkills()
-    {
-        ArrayList<GenericSkill> genericSkills = new ArrayList<>();
-
-        ArrayList<Skill> subSkills = new ArrayList<>();
-        subSkills.add(new Skill(1, "Успехи", false));
-        subSkills.add(new Skill(2, "Идеи", false));
-        subSkills.add(new Skill(3, "Осознания / инсайты", false));
-        genericSkills.add(new GenericSkill(1, "Дневник Успехов", false, subSkills));
-
-        subSkills = new ArrayList<>();
-        subSkills.add(new Skill(1, "Поднавык 1", false));
-        subSkills.add(new Skill(2, "Поднавык 2", false));
-        genericSkills.add(new GenericSkill(2, "Навык 2", false, subSkills));
-
-        return genericSkills;
-    }
 
     BlurPopupWindow blurPopupWindow;
     private void AddSkill(View view)

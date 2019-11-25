@@ -58,7 +58,14 @@ public class TimeTrackingTabAdapter extends RecyclerView.Adapter<TimeTrackingTab
 
     @Override
     public int getItemCount() {
-        return timeTrackingDays.size();
+        if(timeTrackingDays == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return timeTrackingDays.size();
+        }
     }
 
     public class TimeTrackingDayViewHolder extends  RecyclerView.ViewHolder

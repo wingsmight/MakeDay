@@ -62,25 +62,4 @@ public class TimeTrackingTabFragment extends Fragment
         super.onPause();
         backgroundSave();
     }
-
-    private ArrayList<TimeTrackingDay> buildItemList() {
-        ArrayList<TimeTrackingDay> itemList = new ArrayList<>();
-        for (int i=1; i<10; i++) {
-            TimeTrackingDay<Event> item = new TimeTrackingDay<Event>(i, 11, 2019, buildSubItemList());
-            itemList.add(item);
-        }
-        return itemList;
-    }
-
-    private ArrayList<Event> buildSubItemList() {
-        ArrayList<Event> subItemList = new ArrayList<>();
-        Random random = new Random();
-        int randomCount = random.nextInt(7) + 3;
-        for (int i=1; i < randomCount; i++) {
-            Event subItem = new Event(i, 11, 2019, i, 0, i+1, 0, "Пример");
-            subItemList.add(subItem);
-        }
-
-        return subItemList;
-    }
 }

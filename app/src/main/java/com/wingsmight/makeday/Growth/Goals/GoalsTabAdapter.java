@@ -44,7 +44,14 @@ public class GoalsTabAdapter extends RecyclerView.Adapter<GoalsTabAdapter.MyDays
 
     @Override
     public int getItemCount() {
-        return goals.size();
+        if(goals == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return goals.size();
+        }
     }
 
     public class MyDaysViewHolder extends  RecyclerView.ViewHolder

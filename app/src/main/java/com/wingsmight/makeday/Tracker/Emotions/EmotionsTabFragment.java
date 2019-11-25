@@ -61,26 +61,4 @@ public class EmotionsTabFragment extends Fragment
         super.onPause();
         backgroundSave();
     }
-
-    private ArrayList<TimeTrackingDay<EmotionEvent>> buildItemList() {
-        ArrayList<TimeTrackingDay<EmotionEvent>> itemList = new ArrayList<>();
-        for (int i=1; i<10; i++) {
-            TimeTrackingDay<EmotionEvent> item = new TimeTrackingDay<EmotionEvent>(i, 12, 2019, buildSubItemList());
-            itemList.add(item);
-        }
-        return itemList;
-    }
-
-    private ArrayList<EmotionEvent> buildSubItemList() {
-        ArrayList<EmotionEvent> subItemList = new ArrayList<>();
-        Random random = new Random();
-        int randomCount = random.nextInt(7) + 3;
-        int randomEmotion;
-        for (int i=1; i < randomCount; i++) {
-            randomEmotion = random.nextInt(6) - 3;
-            EmotionEvent subItem = new EmotionEvent(i, 11, 2019, i, 0, i+1, 0, String.valueOf(randomEmotion));
-            subItemList.add(subItem);
-        }
-        return subItemList;
-    }
 }

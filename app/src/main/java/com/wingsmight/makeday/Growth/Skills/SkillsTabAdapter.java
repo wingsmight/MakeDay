@@ -114,7 +114,14 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
     @Override
     public int getGroupCount()
     {
-        return listGroup.size();
+        if(listGroup == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return listGroup.size();
+        }
     }
 
     @Override

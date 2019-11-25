@@ -137,15 +137,4 @@ public class GoalsTabFragment extends Fragment
 
         blurPopupWindow.dismiss();
     }
-
-    private ArrayList<Goal> FillRecyclerView()
-    {
-        ArrayList<Goal> goals = new ArrayList<>();
-        for (int i = 1; i < 12; i++)
-        {
-            goals.add(new Goal(i, "Цель..."));
-        }
-
-        return goals;
-    }
 }

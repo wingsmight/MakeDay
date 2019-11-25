@@ -58,7 +58,14 @@ public class EmotionsTabAdapter extends RecyclerView.Adapter<EmotionsTabAdapter.
 
     @Override
     public int getItemCount() {
-        return timeTrackingDays.size();
+        if(timeTrackingDays == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return timeTrackingDays.size();
+        }
     }
 
     public class TimeTrackingDayViewHolder extends  RecyclerView.ViewHolder

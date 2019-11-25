@@ -62,34 +62,4 @@ public class MyDaysFragment extends Fragment
         super.onPause();
         backgroundSave();
     }
-
-    private void FillRecyclerView()
-    {
-        String[] doneDeals = {
-                "дело 1",
-                "дело 2"
-        };
-        String[] undoneDeals = {
-                "дело 3"
-        };
-        RowDayModel rowDayModel = new RowDayModel(16, "ноября", 2019, doneDeals, undoneDeals);
-        days.add(rowDayModel);
-
-        String[] doneDeals2 = {
-                "дело 1"
-        };
-        String[] undoneDeals2 = {
-                "дело 2",
-                "дело 3"
-        };
-        RowDayModel rowDayModel2 = new RowDayModel(15, "ноября", 2019, doneDeals2, undoneDeals2);
-        days.add(rowDayModel2);
-
-        days.add(rowDayModel2);
-        days.add(rowDayModel2);
-        days.add(rowDayModel2);
-        days.add(rowDayModel2);
-        days.add(rowDayModel2);
-        days.add(rowDayModel2);
-    }
 }
