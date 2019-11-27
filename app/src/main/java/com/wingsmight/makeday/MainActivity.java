@@ -44,39 +44,36 @@ public class MainActivity extends AppCompatActivity
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
-                new BottomNavigationView.OnNavigationItemSelectedListener()
-                {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
-                    {
-                        switch (menuItem.getItemId()) {
-                            case R.id.bottom_navigation_my_days0:
-                                fragmentManager.beginTransaction().hide(active).show(fragment1).commit();
-                                active = fragment1;
-                                return true;
-
-                            case R.id.bottom_navigation_tracker1:
-                                fragmentManager.beginTransaction().hide(active).show(fragment2).commit();
-                                active = fragment2;
-                                return true;
-
-                            case R.id.bottom_navigation_growth2:
-                                fragmentManager.beginTransaction().hide(active).show(fragment3).commit();
-                                active = fragment3;
-                                return true;
-
-                            case R.id.bottom_navigation_menu3:
-                                fragmentManager.beginTransaction().hide(active).show(fragment4).commit();
-                                active = fragment4;
-                                return true;
-                        }
-
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
+        {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+            {
+                switch (menuItem.getItemId()) {
+                    case R.id.bottom_navigation_my_days0:
+                        fragmentManager.beginTransaction().hide(active).show(fragment1).commit();
+                        active = fragment1;
                         return true;
-                    }
-                };
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(navigationListener);
+                    case R.id.bottom_navigation_tracker1:
+                        fragmentManager.beginTransaction().hide(active).show(fragment2).commit();
+                        active = fragment2;
+                        return true;
+
+                    case R.id.bottom_navigation_growth2:
+                        fragmentManager.beginTransaction().hide(active).show(fragment3).commit();
+                        active = fragment3;
+                        return true;
+
+                    case R.id.bottom_navigation_menu3:
+                        fragmentManager.beginTransaction().hide(active).show(fragment4).commit();
+                        active = fragment4;
+                        return true;
+                }
+
+                return true;
+            }
+        });
     }
 
     private static Context context;

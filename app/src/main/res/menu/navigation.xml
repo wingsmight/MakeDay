@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/bottom_navigation_my_days0"
-        android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+        android:icon="@drawable/ic_date_range_black_24dp"
         android:title="@string/MyDays" />
 
     <item

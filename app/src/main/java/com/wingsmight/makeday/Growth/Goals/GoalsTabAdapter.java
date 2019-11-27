@@ -69,11 +69,22 @@ public class GoalsTabAdapter extends RecyclerView.Adapter<GoalsTabAdapter.MyDays
 
     public void addGoal(Goal newGoal)
     {
+        if(goals == null)
+        {
+            goals = new ArrayList<>();
+        }
         goals.add(newGoal);
     }
 
     public int getGoalsCount()
     {
-        return goals.size();
+        if(goals == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return goals.size();
+        }
     }
 }

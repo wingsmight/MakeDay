@@ -36,6 +36,7 @@ public class TabInitialization
         RowDayModel rowDayModel2 = new RowDayModel(15, "ноября", 2019, doneDeals2, undoneDeals2);
         days.add(rowDayModel2);
 
+        rowDayModel2.setDay(14);
         days.add(rowDayModel2);
         days.add(rowDayModel2);
         days.add(rowDayModel2);

@@ -127,23 +127,58 @@ public class SaveLoad
         {
             case MY_DAYS:
             {
-                return list0;
+                if(list0 == null)
+                {
+                    return TabInitialization.initMyDays();
+                }
+                else
+                {
+                    return list0;
+                }
             }
             case TIME_TRACKING:
             {
-                return list1;
+                if(list1 == null)
+                {
+                    return TabInitialization.initTimeTrackingTab();
+                }
+                else
+                {
+                    return list1;
+                }
             }
             case EMOTIONS:
             {
-                return list2;
+                if(list2 == null)
+                {
+                    return TabInitialization.initEmotionsTab();
+                }
+                else
+                {
+                    return list2;
+                }
             }
             case SKILLS:
             {
-                return list3;
+                if(list3 == null)
+                {
+                    return TabInitialization.initGenericSkills();
+                }
+                else
+                {
+                    return list3;
+                }
             }
             case GOALS:
             {
-                return list4;
+                if(list4 == null)
+                {
+                    return TabInitialization.initGoals();
+                }
+                else
+                {
+                    return list4;
+                }
             }
             case MENU:
             {

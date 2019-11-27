@@ -225,6 +225,10 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
 
     public void addGenericSkill(GenericSkill newGenericSkill)
     {
+        if(listGroup == null)
+        {
+            listGroup = new ArrayList<>();
+        }
         listGroup.add(newGenericSkill);
     }
 }

@@ -46,7 +46,14 @@ public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysView
 
     @Override
     public int getItemCount() {
-        return rowDayModelArrayList.size();
+        if(rowDayModelArrayList == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return rowDayModelArrayList.size();
+        }
     }
 
     public class MyDaysViewHolder extends  RecyclerView.ViewHolder
