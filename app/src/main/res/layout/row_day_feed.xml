@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="16 ноября"
-                android:textSize="30dp"
+                android:textSize="20sp"
                 android:textColor="@color/RowDayFeedDate"
                 />
 
@@ -41,7 +41,7 @@
                 android:id="@+id/doList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="16sp"
                 android:text="Сделано: дело 1, дело 2"
                 />
 
@@ -49,7 +49,7 @@
                 android:id="@+id/undoList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="16sp"
                 android:text="Не сделано: дело 3"
                 />
 

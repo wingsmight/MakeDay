@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     >
 
 
@@ -16,8 +18,8 @@
 
         <CheckBox
             android:id="@+id/genericSkillCheckBox"
-            android:layout_width="37dp"
-            android:layout_height="37dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:paddingLeft="18dp"
             android:paddingStart="18dp"
             android:layout_marginLeft="10dp"
@@ -34,7 +36,7 @@
             android:id="@+id/genericSkillName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:layout_marginLeft="7dp"
             android:layout_marginStart="7dp"
             android:text="Навык"

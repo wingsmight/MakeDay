@@ -56,7 +56,7 @@ public class SplashActivity extends AppCompatActivity
         };
 
         handler = new Handler();
-        handler.post(runnable);
+        handler.postDelayed(runnable, 1000);
     }
 
     @Override
