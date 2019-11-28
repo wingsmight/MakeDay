@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.wingsmight.makeday.MyDays.MyDaysFragment;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
@@ -20,6 +21,12 @@ public class SplashActivity extends AppCompatActivity
         setContentView(R.layout.activity_splash);
 
         final Intent intent = new Intent(this, MainActivity.class);
+
+        final View loginView = findViewById(R.id.sign_in_button);
+        final View loginView2 = findViewById(R.id.skip_auth);
+        loginView.setVisibility(View.GONE);
+
+        loginView2.setVisibility(View.GONE);
 
         runnable = new Runnable()
         {
@@ -47,11 +54,11 @@ public class SplashActivity extends AppCompatActivity
                     }
                 }
 
+                loginView.setVisibility(View.VISIBLE);
+                loginView2.setVisibility(View.VISIBLE);
 
-
-                startActivity(intent);
-
-                finish();
+                //startActivity(intent);
+                //finish();
             }
         };
 

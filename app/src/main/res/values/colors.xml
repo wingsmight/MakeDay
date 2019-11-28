@@ -11,6 +11,7 @@
     <color name="grey">#8b8b8b</color>
     <color name="darkGrey">#696969</color>
     <color name="white">#ffffff</color>
+    <color name="transparent">#00000000</color>
 
     <color name="RowDayFeedDate">#079466</color>
 </resources>
