@@ -1,14 +1,19 @@
 package com.wingsmight.makeday;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 
@@ -18,11 +23,14 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
     private Runnable runnable;
     private int requestCode;
     Intent intent;
+    GoogleAuthHelper googleSignInHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        googleSignInHelper = new GoogleAuthHelper(this);
 
         intent = new Intent(this, MainActivity.class);
 
@@ -37,7 +45,8 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
             @Override
             public void onClick(View v)
             {
-                GoogleAuth.signIn();
+                //GoogleAuth.signIn();
+                signIn();
             }
         });
 
@@ -77,7 +86,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
                     }
                 }
 
-                if(GoogleAuth.getUser() == null)
+                if(GoogleSignIn.getLastSignedInAccount(context) == null)
                 {
                     skipAuth.setVisibility(View.VISIBLE);
                     signInButton.setVisibility(View.VISIBLE);
@@ -104,12 +113,38 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
         }
     }
 
+    // [START onactivityresult]
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
-        this.requestCode = requestCode;
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == GoogleAuthHelper.RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                googleSignInHelper.getGoogleAccountDetails(result);
+
+                updateUI(GoogleSignIn.getLastSignedInAccount(context));
+            } else {
+                // Google Sign In failed, update UI appropriately
+                // [START_EXCLUDE]
+                Log.d("Splash screen", "signInWith Google failed");
+
+                updateUI(null);
+                // [END_EXCLUDE]
+            }
+        }
     }
+    // [END onactivityresult]
+
+    // [START signin]
+    public void signIn()
+    {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleSignInHelper.getGoogleClient());
+        this.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
+    }
+    // [END signin]
 
     private static Context context;
     public static Context getContext()

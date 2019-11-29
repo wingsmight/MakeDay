@@ -1,5 +1,6 @@
 package com.wingsmight.makeday;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,6 +13,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,11 +31,10 @@ public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListe
     public static final int RC_SIGN_IN = 9001;
     private boolean isLoggingOut = false;
 
-    public static GoogleAuthHelper newInstance(AppCompatActivity mActivity) {
-        if (googleSignInHelper == null) {
-            googleSignInHelper = new GoogleAuthHelper(mActivity);
-        }
-        return googleSignInHelper;
+    public GoogleAuthHelper(AppCompatActivity mActivity, GoogleAuthListener listener) {
+        this.mActivity = mActivity;
+        addListener(listener);
+        initGoogleSignIn();
     }
 
     public GoogleAuthHelper(AppCompatActivity mActivity) {
@@ -80,10 +83,14 @@ public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListe
                         @Override
                         public void onResult(@NonNull Status status) {
                             isLoggingOut = false;
+
+                            onUpdateUI(GoogleAuth.getUser());
                         }
                     });
         } else {
             isLoggingOut = true;
+
+            onUpdateUI(GoogleAuth.getUser());
         }
     }
 
@@ -102,5 +109,26 @@ public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListe
     @Override
     public void onConnectionSuspended(int i) {
         Log.w(TAG, "onConnectionSuspended");
+    }
+
+    public void signIn()
+    {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleSignInHelper.getGoogleClient());
+        mActivity.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
+    }
+
+    private static List<GoogleAuthListener> listeners = new ArrayList<GoogleAuthListener>();
+
+    public static void addListener(GoogleAuthListener toAdd)
+    {
+        listeners.add(toAdd);
+    }
+
+    private static void onUpdateUI(GoogleSignInAccount account)
+    {
+        for (GoogleAuthListener hl : listeners)
+        {
+            hl.updateUI(account);
+        }
     }
 }
