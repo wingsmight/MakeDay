@@ -1,7 +1,6 @@
 package com.wingsmight.makeday.Growth.Skills;
 
 import android.content.Context;
-import android.support.design.widget.TextInputEditText;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListA
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class SkillsTabAdapter extends AnimatedExpandableListAdapter

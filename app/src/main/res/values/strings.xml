@@ -19,4 +19,5 @@
     <string name="addNewSkill">Добавить новый навык</string>
     <string name="addNewGoal">Добавить новую цель</string>
     <string name="SubSkillInfoDescription">Объяснение\n...\n...</string>
+    <string name="default_web_client_id">796616249412-369vmbaq97mh91inqsj841undvqop22q.apps.googleusercontent.com</string>
 </resources>

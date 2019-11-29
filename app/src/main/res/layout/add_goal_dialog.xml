@@ -34,7 +34,7 @@
         android:orientation="horizontal"
         >
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/newGoalInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

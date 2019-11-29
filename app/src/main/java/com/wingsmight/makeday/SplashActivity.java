@@ -4,29 +4,52 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 
-import com.wingsmight.makeday.MyDays.MyDaysFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.SignInButton;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 
-public class SplashActivity extends AppCompatActivity
+public class SplashActivity extends AppCompatActivity implements GoogleAuthListener
 {
     private Handler handler;
     private Runnable runnable;
+    private int requestCode;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        final Intent intent = new Intent(this, MainActivity.class);
+        intent = new Intent(this, MainActivity.class);
 
-        final View loginView = findViewById(R.id.sign_in_button);
-        final View loginView2 = findViewById(R.id.skip_auth);
-        loginView.setVisibility(View.GONE);
+        final View skipAuth = findViewById(R.id.skip_auth);
+        final SignInButton signInButton = findViewById(R.id.sign_in_button);
+        skipAuth.setVisibility(View.GONE);
 
-        loginView2.setVisibility(View.GONE);
+        GoogleAuth.Init(this, this);
+        signInButton.setVisibility(View.GONE);
+        signInButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                GoogleAuth.signIn();
+            }
+        });
+
+        skipAuth.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(intent);
+                finish();
+            }
+        });
 
         runnable = new Runnable()
         {
@@ -54,16 +77,21 @@ public class SplashActivity extends AppCompatActivity
                     }
                 }
 
-                loginView.setVisibility(View.VISIBLE);
-                loginView2.setVisibility(View.VISIBLE);
-
-                //startActivity(intent);
-                //finish();
+                if(GoogleAuth.getUser() == null)
+                {
+                    skipAuth.setVisibility(View.VISIBLE);
+                    signInButton.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    startActivity(intent);
+                    finish();
+                }
             }
         };
 
         handler = new Handler();
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, 800);
     }
 
     @Override
@@ -76,10 +104,27 @@ public class SplashActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        this.requestCode = requestCode;
+    }
+
     private static Context context;
     public static Context getContext()
     {
         return context;
+    }
+
+    @Override
+    public void updateUI(GoogleSignInAccount account)
+    {
+        if(account != null)
+        {
+            startActivity(intent);
+            finish();
+        }
     }
 }
 
