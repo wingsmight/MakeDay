@@ -1,52 +1,48 @@
 package com.wingsmight.makeday;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity implements GoogleAuthListener
 {
     private Handler handler;
     private Runnable runnable;
-    private int requestCode;
-    Intent intent;
-    GoogleAuthHelper googleSignInHelper;
+    private View skipAuth;
+    private SignInButton signInButton;
+    private Intent intent;
+    private GoogleAuthHelper googleSignInHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        googleSignInHelper = new GoogleAuthHelper(this);
+        googleSignInHelper = new GoogleAuthHelper(this, this, this);
 
         intent = new Intent(this, MainActivity.class);
 
-        final View skipAuth = findViewById(R.id.skip_auth);
-        final SignInButton signInButton = findViewById(R.id.sign_in_button);
+        skipAuth = findViewById(R.id.skip_auth);
+        signInButton = findViewById(R.id.sign_in_button);
         skipAuth.setVisibility(View.GONE);
 
-        GoogleAuth.Init(this, this);
         signInButton.setVisibility(View.GONE);
         signInButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                //GoogleAuth.signIn();
-                signIn();
+                googleSignInHelper.signIn();
             }
         });
 
@@ -55,8 +51,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
             @Override
             public void onClick(View v)
             {
-                startActivity(intent);
-                finish();
+                closeSplash();
             }
         });
 
@@ -86,16 +81,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
                     }
                 }
 
-                if(GoogleSignIn.getLastSignedInAccount(context) == null)
-                {
-                    skipAuth.setVisibility(View.VISIBLE);
-                    signInButton.setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    startActivity(intent);
-                    finish();
-                }
+                updateUI(googleSignInHelper.getUser());
             }
         };
 
@@ -113,38 +99,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
         }
     }
 
-    // [START onactivityresult]
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == GoogleAuthHelper.RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                googleSignInHelper.getGoogleAccountDetails(result);
-
-                updateUI(GoogleSignIn.getLastSignedInAccount(context));
-            } else {
-                // Google Sign In failed, update UI appropriately
-                // [START_EXCLUDE]
-                Log.d("Splash screen", "signInWith Google failed");
-
-                updateUI(null);
-                // [END_EXCLUDE]
-            }
-        }
+        googleSignInHelper.updateUIonActivityResult(requestCode, data);
     }
-    // [END onactivityresult]
-
-    // [START signin]
-    public void signIn()
-    {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleSignInHelper.getGoogleClient());
-        this.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
-    }
-    // [END signin]
 
     private static Context context;
     public static Context getContext()
@@ -157,9 +118,31 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
     {
         if(account != null)
         {
-            startActivity(intent);
-            finish();
+            closeSplash();
         }
+        else
+        {
+            skipAuth.setVisibility(View.VISIBLE);
+            signInButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void signIn(GoogleSignInAccount account)
+    {
+        Toast.makeText(context, account.getDisplayName() + ", добро пожаловать", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void signOut(GoogleSignInAccount account)
+    {
+
+    }
+
+    private void closeSplash()
+    {
+        startActivity(intent);
+        finish();
     }
 }
 

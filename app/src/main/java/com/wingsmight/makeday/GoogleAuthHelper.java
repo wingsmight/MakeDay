@@ -1,11 +1,12 @@
 package com.wingsmight.makeday;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -20,78 +21,92 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
-public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks {
-    private static final String TAG = GoogleAuthHelper.class.getSimpleName();
-
-    private static GoogleAuthHelper googleSignInHelper;
+public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
+{
     private AppCompatActivity mActivity;
+    private Context context;
+    private FragmentActivity fragmentActivity;
+    private Fragment fragment;
     private GoogleApiClient mGoogleApiClient;
     public static final int RC_SIGN_IN = 9001;
     private boolean isLoggingOut = false;
 
-    public GoogleAuthHelper(AppCompatActivity mActivity, GoogleAuthListener listener) {
+    public GoogleAuthHelper(Context context, AppCompatActivity mActivity, GoogleAuthListener listener)
+    {
+        this.fragmentActivity = null;
+        this.fragment = null;
         this.mActivity = mActivity;
+        this.context = context;
         addListener(listener);
-        initGoogleSignIn();
-    }
 
-    public GoogleAuthHelper(AppCompatActivity mActivity) {
-        this.mActivity = mActivity;
-        initGoogleSignIn();
-    }
-
-
-    private void initGoogleSignIn() {
-        // [START config_sign_in]
-        // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(mActivity.getString(R.string.default_web_client_id))
+                .requestIdToken(context.getResources().getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        // [END config_sign_in]
 
-        mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
-                .enableAutoManage(mActivity /* FragmentActivity */, this /* OnConnectionFailedListener */)
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .enableAutoManage(mActivity, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .addConnectionCallbacks(this)
                 .build();
+    }
 
+    public GoogleAuthHelper(Context context, Fragment fragment, GoogleAuthListener listener)
+    {
+        this.fragmentActivity = fragment.getActivity();
+        this.fragment = fragment;
+        this.mActivity = null;
+        this.context = context;
+        addListener(listener);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getResources().getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .enableAutoManage(fragmentActivity, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addConnectionCallbacks(this)
+                .build();
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(mActivity, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult)
+    {
+        Toast.makeText(context, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    public void getGoogleAccountDetails(GoogleSignInResult result) {
-        // Google Sign In was successful, authenticate with FireBase
-        GoogleSignInAccount account = result.getSignInAccount();
-        // You are now logged into Google
+    public GoogleSignInAccount getUser()
+    {
+        return GoogleSignIn.getLastSignedInAccount(context);
     }
+
     public void signOut() {
 
-        if (mGoogleApiClient.isConnected()) {
-
-            // Google sign out
+        if (mGoogleApiClient.isConnected())
+        {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                     new ResultCallback<Status>() {
                         @Override
                         public void onResult(@NonNull Status status) {
                             isLoggingOut = false;
 
-                            onUpdateUI(GoogleAuth.getUser());
+                            onUpdateUI(getUser());
                         }
                     });
-        } else {
+        }
+        else
+        {
             isLoggingOut = true;
 
-            onUpdateUI(GoogleAuth.getUser());
+            onUpdateUI(getUser());
         }
+
+        onSignOut(getUser());
     }
 
     public GoogleApiClient getGoogleClient() {
@@ -99,36 +114,81 @@ public class GoogleAuthHelper implements GoogleApiClient.OnConnectionFailedListe
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.w(TAG, "onConnected");
-        if (isLoggingOut) {
+    public void onConnected(@Nullable Bundle bundle)
+    {
+        if (isLoggingOut)
+        {
             signOut();
         }
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-        Log.w(TAG, "onConnectionSuspended");
+    public void onConnectionSuspended(int i)
+    {
+        Toast.makeText(context, "onConnectionSuspended", Toast.LENGTH_SHORT).show();
     }
+
 
     public void signIn()
     {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleSignInHelper.getGoogleClient());
-        mActivity.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
+        if(fragment != null)
+        {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(getGoogleClient());
+            fragment.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
+        }
+        else if(mActivity != null)
+        {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(getGoogleClient());
+            mActivity.startActivityForResult(signInIntent, GoogleAuthHelper.RC_SIGN_IN);
+        }
     }
 
-    private static List<GoogleAuthListener> listeners = new ArrayList<GoogleAuthListener>();
+    public void updateUIonActivityResult(int requestCode, Intent data)
+    {
+        if (requestCode == GoogleAuthHelper.RC_SIGN_IN)
+        {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess())
+            {
+                onUpdateUI(getUser());
+            }
+            else
+            {
+                onUpdateUI(null);
+            }
 
-    public static void addListener(GoogleAuthListener toAdd)
+            onSignIn(getUser());
+        }
+    }
+
+    private List<GoogleAuthListener> listeners = new ArrayList<>();
+
+    public void addListener(GoogleAuthListener toAdd)
     {
         listeners.add(toAdd);
     }
 
-    private static void onUpdateUI(GoogleSignInAccount account)
+    private void onUpdateUI(GoogleSignInAccount account)
     {
         for (GoogleAuthListener hl : listeners)
         {
             hl.updateUI(account);
+        }
+    }
+
+    private void onSignIn(GoogleSignInAccount account)
+    {
+        for (GoogleAuthListener hl : listeners)
+        {
+            hl.signIn(account);
+        }
+    }
+
+    private void onSignOut(GoogleSignInAccount account)
+    {
+        for (GoogleAuthListener hl : listeners)
+        {
+            hl.signOut(account);
         }
     }
 }
