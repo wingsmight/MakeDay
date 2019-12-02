@@ -1,11 +1,14 @@
 package com.wingsmight.makeday.Growth.Goals;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
@@ -81,28 +85,30 @@ public class GoalsTabFragment extends Fragment
         backgroundSave();
     }
 
-    BlurPopupWindow blurPopupWindow;
+    View dialogView;
+    AlertDialog popupDialog;
     private void AddGoal(View view)
     {
-        //Show blur popup
-        blurPopupWindow = new BlurPopupWindow.Builder(view.getContext())
-                .setContentView(R.layout.add_goal_dialog)
-                .bindClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
-                        AddGoalFromInput(inputEditText);
-                    }
-                }, R.id.dialog_like_bt)
-                .setGravity(Gravity.CENTER_HORIZONTAL)
-                .setScaleRatio(0.2f)
-                .setBlurRadius(10)
-                .setTintColor(0x30000000)
-                .build();
-        blurPopupWindow.show();
+        //Show popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        dialogView = getLayoutInflater().inflate(R.layout.add_goal_dialog, null);
+        builder.setView(dialogView);
+        popupDialog = builder.create();
+        popupDialog.show();
+
+        ImageButton sendButton = dialogView.findViewById(R.id.dialog_like_bt);
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
+                AddGoalFromInput(inputEditText);
+            }
+        });
 
         //Enter button -> add goal
-        final TextInputEditText inputEditText = blurPopupWindow.findViewById(R.id.newGoalInput);
+        final TextInputEditText inputEditText = dialogView.findViewById(R.id.newGoalInput);
         inputEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -135,6 +141,6 @@ public class GoalsTabFragment extends Fragment
             goalsTabAdapter.addGoal(newGoal);
         }
 
-        blurPopupWindow.dismiss();
+        popupDialog.dismiss();
     }
 }

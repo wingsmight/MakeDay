@@ -24,6 +24,8 @@
         android:contentDescription="Добавить навык"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"/>
+        app:tint="@color/white"
+        app:backgroundTint="@color/colorPrimary"
+        />
 
 </FrameLayout>

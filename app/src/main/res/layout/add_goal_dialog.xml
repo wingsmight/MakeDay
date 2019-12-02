@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="@string/addNewGoal"
         android:textColor="#333333"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"/>
 
     <LinearLayout

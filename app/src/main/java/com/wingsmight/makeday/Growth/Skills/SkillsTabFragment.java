@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -15,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
@@ -117,28 +120,30 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
     }
 
 
-    BlurPopupWindow blurPopupWindow;
+    View dialogView;
+    AlertDialog popupDialog;
     private void AddSkill(View view)
     {
-        //Show blur popup
-        blurPopupWindow = new BlurPopupWindow.Builder(view.getContext())
-                .setContentView(R.layout.add_skill_dialog)
-                .bindClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
-                        AddSkillFromInput(inputEditText);
-                    }
-                }, R.id.dialog_like_bt)
-                .setGravity(Gravity.CENTER_HORIZONTAL)
-                .setScaleRatio(0.2f)
-                .setBlurRadius(10)
-                .setTintColor(0x30000000)
-                .build();
-        blurPopupWindow.show();
+        //Show popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        dialogView = getLayoutInflater().inflate(R.layout.add_skill_dialog, null);
+        builder.setView(dialogView);
+        popupDialog = builder.create();
+        popupDialog.show();
+
+        ImageButton sendButton = dialogView.findViewById(R.id.dialog_like_bt);
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
+                AddSkillFromInput(inputEditText);
+            }
+        });
 
         //Enter button -> add goal
-        final TextInputEditText inputEditText = blurPopupWindow.findViewById(R.id.newGoalInput);
+        final TextInputEditText inputEditText = dialogView.findViewById(R.id.newGoalInput);
         inputEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -172,6 +177,6 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
             mExpandableListAdapter.addGenericSkill(newGenericSkill);
         }
 
-        blurPopupWindow.dismiss();
+        popupDialog.dismiss();
     }
 }
