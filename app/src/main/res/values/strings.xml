@@ -22,4 +22,5 @@
     <string name="default_web_client_id">796616249412-369vmbaq97mh91inqsj841undvqop22q.apps.googleusercontent.com</string>
     <string name="Launch">Запустить</string>
     <string name="launchTimeTracking">Запустить учёт времени</string>
+    <string name="IntervalRequest">Промежуток\nзапроса:</string>
 </resources>
