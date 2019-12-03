@@ -7,29 +7,47 @@
     android:orientation="vertical"
     >
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/dayCard"
+
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="4dp"
-        app:cardElevation="@dimen/cardview_default_elevation"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="10dp"
         >
-        <TextView
-            android:id="@+id/eventsDate"
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/dayCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:textSize="17sp"
-            android:textColor="@color/colorBackground"
-            android:textStyle="bold"
-            android:text="16 ноября"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
+            app:cardBackgroundColor="@color/colorPrimary"
+            >
+            <TextView
+                android:id="@+id/eventsDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textSize="17sp"
+                android:textColor="@color/colorBackground"
+                android:textStyle="bold"
+                android:text="16 ноября"
+                />
+
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="2dp"
+            android:layout_centerInParent="true"
+            android:background="@color/colorPrimary"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             />
-    </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
 
 
     <androidx.recyclerview.widget.RecyclerView
