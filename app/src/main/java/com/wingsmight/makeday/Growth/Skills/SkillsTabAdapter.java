@@ -6,15 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListAdapter;
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AlertDialog;
 
 public class SkillsTabAdapter extends AnimatedExpandableListAdapter
 {
@@ -30,6 +34,8 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         this.listGroup = listGroup;
     }
 
+    View dialogView;
+    AlertDialog popupDialog;
     @Override
     public View getRealChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
     {
@@ -74,21 +80,22 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             @Override
             public void onClick(View view)
             {
-                //Show blur popup
-                blurPopupWindow = new BlurPopupWindow.Builder(view.getContext())
-                        .setContentView(R.layout.skill_info_dialog)
-                        .bindClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                blurPopupWindow.dismiss();
-                            }
-                        }, R.id.closeSkillInfo)
-                        .setGravity(Gravity.CENTER_HORIZONTAL)
-                        .setScaleRatio(0.2f)
-                        .setBlurRadius(10)
-                        .setTintColor(0x30000000)
-                        .build();
-                blurPopupWindow.show();
+                //Show popup
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.skill_info_dialog, null);
+                builder.setView(dialogView);
+                popupDialog = builder.create();
+                popupDialog.show();
+
+                ImageView sendButton = dialogView.findViewById(R.id.closeSkillInfo);
+                sendButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        popupDialog.dismiss();
+                    }
+                });
             }
         });
 
