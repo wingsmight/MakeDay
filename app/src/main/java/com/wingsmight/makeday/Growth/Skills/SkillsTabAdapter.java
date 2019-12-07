@@ -66,17 +66,10 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             @Override
             public void onClick(View v)
             {
-                switch(v.getId())
-                {
-                    case R.id.skillCheckBox:
-                    {
-                        CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
-                        int[] pos = (int[]) checkBox1.getTag();
-                        ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
-                        notifyDataSetChanged();
-                        break;
-                    }
-                }
+                CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
+                int[] pos = (int[]) checkBox1.getTag();
+                ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
+                notifyDataSetChanged();
             }
         });
         checkBox.setChecked(skillChecked);
@@ -84,7 +77,6 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
         skillInfo.setOnClickListener(new View.OnClickListener()
         {
-            BlurPopupWindow blurPopupWindow;
             @Override
             public void onClick(View view)
             {
@@ -192,7 +184,21 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             public void onClick(View v)
             {
                 int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
-                ((GenericSkill) getGroup(pos)).setChecked(((CheckBox) v).isChecked());
+
+                GenericSkill skill = (GenericSkill) getGroup(pos);
+                if(skill.isChecked() == SkillCheckType.ALLCHECK)
+                {
+                    skill.setChecked(SkillCheckType.NOONECHECK);
+                }
+                else if(skill.isChecked() == SkillCheckType.NOONECHECK)
+                {
+                    skill.setChecked(SkillCheckType.ALLCHECK);
+                }
+                else
+                {
+                    skill.setChecked(SkillCheckType.ALLCHECK);
+                }
+
                 notifyDataSetChanged();
             }
         });
@@ -201,6 +207,7 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         ArrayList<Skill> skills = currentGenericSkill.getSkills();
         boolean isAllChecked = true;
         boolean isNoneChecked = true;
+        int groupCheckColor;
         if(skills != null && skills.size() != 0)
         {
             for (Skill skill : skills)
@@ -214,33 +221,30 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
                     isNoneChecked = false;
                 }
             }
-
-            if(isAllChecked)
-            {
-                currentGenericSkill.setChecked(true);
-            }
-
-            checkBox.setChecked(!isNoneChecked);
-        }
-        else
-        {
-            isNoneChecked = false;
-
-            checkBox.setChecked(currentGenericSkill.isChecked());
         }
 
-
-        int groupCheckColor;
-        if(!isAllChecked)
+        if(isAllChecked)
         {
-            groupCheckColor = Color.GRAY;
-        }
-        else
-        {
+            currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
             groupCheckColor = context.getResources().getColor(R.color.colorAccent);
+            setCheckBoxColor(checkBox, groupCheckColor);
+            checkBox.setChecked(true);
+        }
+        else if(isNoneChecked)
+        {
+            currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
+            groupCheckColor = Color.GRAY;
+            setCheckBoxColor(checkBox, groupCheckColor);
+            checkBox.setChecked(false);
+        }
+        else
+        {
+            currentGenericSkill.setChecked(SkillCheckType.SOMECHECK);
+            groupCheckColor = Color.GRAY;
+            setCheckBoxColor(checkBox, groupCheckColor);
+            checkBox.setChecked(true);
         }
 
-        setCheckBoxColor(checkBox, groupCheckColor);
 
         return convertView;
     }

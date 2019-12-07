@@ -46,6 +46,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
             }
         });
 
+        skipAuth.setBackground(null);
         skipAuth.setOnClickListener(new View.OnClickListener()
         {
             @Override

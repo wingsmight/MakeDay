@@ -8,10 +8,10 @@ public class GenericSkill
 {
     private int serialNumber;
     private String name;
-    private boolean isChecked;
+    private SkillCheckType isChecked;
     private ArrayList<Skill> skills;
 
-    public GenericSkill(int serialNumber, String name, boolean isChecked, ArrayList<Skill> skills)
+    public GenericSkill(int serialNumber, String name, SkillCheckType isChecked, ArrayList<Skill> skills)
     {
         this.serialNumber = serialNumber;
         this.name = name;
@@ -39,14 +39,26 @@ public class GenericSkill
         this.name = name;
     }
 
-    public boolean isChecked()
+    public SkillCheckType isChecked()
     {
         return isChecked;
     }
 
-    public void setChecked(boolean checked)
+    public void setChecked(SkillCheckType checked)
     {
         isChecked = checked;
+        if(checked == SkillCheckType.ALLCHECK)
+        {
+            setChildrenChecked(true);
+        }
+        else if(checked == SkillCheckType.NOONECHECK)
+        {
+            setChildrenChecked(false);
+        }
+    }
+
+    private void setChildrenChecked(boolean checked)
+    {
         if(skills != null)
         {
             for (Skill skill : skills)
@@ -66,3 +78,4 @@ public class GenericSkill
         this.skills = skills;
     }
 }
+

@@ -172,7 +172,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
 
         if(!newSkillName.equals(""))
         {
-            GenericSkill newGenericSkill = new GenericSkill(mExpandableListAdapter.getGroupCount() + 1, newSkillName, false, null);
+            GenericSkill newGenericSkill = new GenericSkill(mExpandableListAdapter.getGroupCount() + 1, newSkillName, SkillCheckType.NOONECHECK, null);
             //genericSkills.add(newGenericSkill);
             mExpandableListAdapter.addGenericSkill(newGenericSkill);
         }

@@ -3,6 +3,7 @@ package com.wingsmight.makeday;
 import com.wingsmight.makeday.Growth.Goals.Goal;
 import com.wingsmight.makeday.Growth.Skills.GenericSkill;
 import com.wingsmight.makeday.Growth.Skills.Skill;
+import com.wingsmight.makeday.Growth.Skills.SkillCheckType;
 import com.wingsmight.makeday.Tracker.Emotions.EmotionEvent;
 import com.wingsmight.makeday.Tracker.Event;
 import com.wingsmight.makeday.Tracker.RowDayModel;
@@ -56,12 +57,12 @@ public class TabInitialization
         subSkills.add(new Skill(1, "Успехи", false));
         subSkills.add(new Skill(2, "Идеи", false));
         subSkills.add(new Skill(3, "Осознания / инсайты", false));
-        genericSkills.add(new GenericSkill(1, "Дневник Успехов", false, subSkills));
+        genericSkills.add(new GenericSkill(1, "Дневник Успехов", SkillCheckType.NOONECHECK, subSkills));
 
         subSkills = new ArrayList<>();
         subSkills.add(new Skill(1, "Поднавык 1", false));
         subSkills.add(new Skill(2, "Поднавык 2", false));
-        genericSkills.add(new GenericSkill(2, "Навык 2", false, subSkills));
+        genericSkills.add(new GenericSkill(2, "Навык 2", SkillCheckType.NOONECHECK, subSkills));
 
         return genericSkills;
     }
