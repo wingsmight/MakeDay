@@ -13,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.wingsmight.makeday.GoogleAuthHelper;
 import com.wingsmight.makeday.GoogleAuthListener;
+import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.TabName;
 
@@ -67,6 +68,17 @@ public class MenuFragment extends Fragment implements GoogleAuthListener
                 {
                     googleSignInHelper.signOut();
                 }
+            }
+        });
+
+        TextView aboutAppTextView = view.findViewById(R.id.aboutAppText);
+        aboutAppTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(getContext(), AboutAppActivity.class);
+                startActivity(intent);
             }
         });
     }

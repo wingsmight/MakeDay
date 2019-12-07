@@ -23,4 +23,5 @@
     <string name="Launch">Запустить</string>
     <string name="launchTimeTracking">Запустить учёт времени</string>
     <string name="IntervalRequest">Промежуток\nзапроса:</string>
+    <string name="AboutApp">О приложении</string>
 </resources>
