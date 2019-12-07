@@ -19,8 +19,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:layout_gravity="center"
-        android:button="@null"
-        android:background="?android:attr/listChoiceIndicatorMultiple"
         >
 
     </CheckBox>

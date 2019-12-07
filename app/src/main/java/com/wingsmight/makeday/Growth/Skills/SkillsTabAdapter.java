@@ -1,6 +1,11 @@
 package com.wingsmight.makeday.Growth.Skills;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.CompoundButtonCompat;
 
 public class SkillsTabAdapter extends AnimatedExpandableListAdapter
 {
@@ -183,22 +191,16 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             @Override
             public void onClick(View v)
             {
-                switch(v.getId())
-                {
-                    case R.id.genericSkillCheckBox:
-                    {
-                        int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
-                        ((GenericSkill) getGroup(pos)).setChecked(((CheckBox) v).isChecked());
-                        notifyDataSetChanged();
-                        break;
-                    }
-                }
+                int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
+                ((GenericSkill) getGroup(pos)).setChecked(((CheckBox) v).isChecked());
+                notifyDataSetChanged();
             }
         });
 
         //Set checkbox
         ArrayList<Skill> skills = currentGenericSkill.getSkills();
         boolean isAllChecked = true;
+        boolean isNoneChecked = true;
         if(skills != null && skills.size() != 0)
         {
             for (Skill skill : skills)
@@ -206,7 +208,10 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
                 if(!skill.isChecked())
                 {
                     isAllChecked = false;
-                    break;
+                }
+                else
+                {
+                    isNoneChecked = false;
                 }
             }
 
@@ -214,12 +219,38 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
             {
                 currentGenericSkill.setChecked(true);
             }
+
+            checkBox.setChecked(!isNoneChecked);
+        }
+        else
+        {
+            isNoneChecked = false;
+
+            checkBox.setChecked(currentGenericSkill.isChecked());
         }
 
 
-        checkBox.setChecked(isAllChecked);
+        int groupCheckColor;
+        if(!isAllChecked)
+        {
+            groupCheckColor = Color.GRAY;
+        }
+        else
+        {
+            groupCheckColor = context.getResources().getColor(R.color.colorAccent);
+        }
+
+        setCheckBoxColor(checkBox, groupCheckColor);
 
         return convertView;
+    }
+
+    private void setCheckBoxColor(CheckBox checkBox, int groupCheckColor)
+    {
+        Drawable drawable =  CompoundButtonCompat.getButtonDrawable(checkBox);
+        drawable = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(drawable, groupCheckColor);
+        DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
     }
 
     @Override
