@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         >
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/genericSkillCheckBox"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -24,9 +24,11 @@
             android:layout_marginStart="10dp"
             android:layout_gravity="center"
             android:focusable="false"
+            android:drawableTint="@color/white"
+            android:backgroundTint="@color/white"
             >
 
-        </CheckBox>
+        </androidx.appcompat.widget.AppCompatCheckBox>
 
         <TextView
             android:id="@+id/genericSkillName"

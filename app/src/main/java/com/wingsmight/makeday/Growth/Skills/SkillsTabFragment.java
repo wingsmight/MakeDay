@@ -10,17 +10,18 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import android.view.Gravity;
+
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
 import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListView;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
@@ -29,12 +30,11 @@ import com.wingsmight.makeday.TabName;
 import java.util.ArrayList;
 
 
-public class SkillsTabFragment extends Fragment implements ExpandableListView.OnGroupClickListener, ExpandableListView.OnChildClickListener,
-        ExpandableListView.OnGroupExpandListener
+public class SkillsTabFragment extends Fragment implements ExpandableListView.OnGroupExpandListener
 {
     TabName tabName = TabName.SKILLS;
-    private AnimatedExpandableListView mExpandableListView;
-    private SkillsTabAdapter mExpandableListAdapter;
+    private ExpandableListView expandableListView;
+    private SkillsTabAdapter expandableListAdapter;
     private int lastExpandedPosition = -1;
     ArrayList<GenericSkill> genericSkills;
 
@@ -63,12 +63,10 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         //Expandable list
         genericSkills = SaveLoad.load(tabName);//initGenericSkills();
 
-        mExpandableListView = view.findViewById(R.id.expandable_lst);
-        mExpandableListAdapter = new SkillsTabAdapter(getContext(), genericSkills);
-        mExpandableListView.setAdapter(mExpandableListAdapter);
-        mExpandableListView.setOnGroupClickListener(this);
-        mExpandableListView.setOnChildClickListener(this);
-        mExpandableListView.setOnGroupExpandListener(this);
+        expandableListView = view.findViewById(R.id.expandable_lst);
+        expandableListAdapter = new SkillsTabAdapter(getContext(), genericSkills);
+        expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.setOnGroupExpandListener(this);
     }
 
     private void backgroundSave(){
@@ -88,33 +86,27 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         backgroundSave();
     }
 
-    @Override
-    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-        if (mExpandableListView.isGroupExpanded(groupPosition)) {
-            mExpandableListView.collapseGroupWithAnimation(groupPosition);
-        } else {
-            mExpandableListView.expandGroupWithAnimation(groupPosition);
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+//        if (expandableListView.isGroupExpanded(groupPosition)) {
+//            //expandableListView.collapseGroupWithAnimation(groupPosition);
+//        } else {
+//            //expandableListView.expandGroupWithAnimation(groupPosition);
+//        }
+//        return true;
+//    }
 
-    @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-        // handle click based on child position
-        return false;
-    }
+//    @Override
+//    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+//        // handle click based on child position
+//        return false;
+//    }
 
-    /**
-     * This is done in order to close the previously expanded group
-     * when clicked on a new group
-     *
-     *@param groupPosition
-     */
     @Override
     public void onGroupExpand(int groupPosition) {
-        if (lastExpandedPosition != -1
-                && groupPosition != lastExpandedPosition) {
-            mExpandableListView.collapseGroup(lastExpandedPosition);
+        if (lastExpandedPosition != -1 && groupPosition != lastExpandedPosition)
+        {
+            expandableListView.collapseGroup(lastExpandedPosition);
         }
         lastExpandedPosition = groupPosition;
     }
@@ -172,9 +164,9 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
 
         if(!newSkillName.equals(""))
         {
-            GenericSkill newGenericSkill = new GenericSkill(mExpandableListAdapter.getGroupCount() + 1, newSkillName, SkillCheckType.NOONECHECK, null);
+            GenericSkill newGenericSkill = new GenericSkill(expandableListAdapter.getGroupCount() + 1, newSkillName, SkillCheckType.NOONECHECK, null);
             //genericSkills.add(newGenericSkill);
-            mExpandableListAdapter.addGenericSkill(newGenericSkill);
+            expandableListAdapter.addGenericSkill(newGenericSkill);
         }
 
         popupDialog.dismiss();

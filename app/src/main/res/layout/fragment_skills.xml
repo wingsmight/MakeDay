@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true"
     tools:context=".Growth.Skills.SkillsTabFragment">
     
-    <com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListView
+    <ExpandableListView
         android:id="@+id/expandable_lst"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -2,6 +2,7 @@ package com.wingsmight.makeday.Growth.Skills;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,7 +11,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.ExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,92 +31,15 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.CompoundButtonCompat;
 
-public class SkillsTabAdapter extends AnimatedExpandableListAdapter
+public class SkillsTabAdapter extends BaseExpandableListAdapter
 {
     Context context;
     List<GenericSkill> listGroup;
-    //HashMap<int, List<Skill>> listItem;
-
-
 
     public SkillsTabAdapter(Context context, List<GenericSkill> listGroup)
     {
         this.context = context;
         this.listGroup = listGroup;
-    }
-
-    View dialogView;
-    AlertDialog popupDialog;
-    @Override
-    public View getRealChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
-    {
-        if(convertView == null)
-        {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.row_skill, null);
-        }
-
-        String skillName = ((Skill)getChild(groupPosition, childPosition)).getName();
-
-        TextView textView = convertView.findViewById(R.id.skillName);
-        textView.setText(skillName);
-
-        boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
-        CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
-        checkBox.setTag(new int[]{groupPosition, childPosition});
-        checkBox.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
-                int[] pos = (int[]) checkBox1.getTag();
-                ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
-                notifyDataSetChanged();
-            }
-        });
-        checkBox.setChecked(skillChecked);
-
-        ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
-        skillInfo.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                //Show popup
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.skill_info_dialog, null);
-                builder.setView(dialogView);
-                popupDialog = builder.create();
-                popupDialog.show();
-
-                ImageView sendButton = dialogView.findViewById(R.id.closeSkillInfo);
-                sendButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        popupDialog.dismiss();
-                    }
-                });
-            }
-        });
-
-        return convertView;
-    }
-
-    @Override
-    public int getRealChildrenCount(int groupPosition)
-    {
-        ArrayList<Skill> skills = listGroup.get(groupPosition).getSkills();
-        if(skills == null)
-        {
-            return 0;
-        }
-        else
-        {
-            return skills.size();
-        }
     }
 
     @Override
@@ -126,6 +52,20 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         else
         {
             return listGroup.size();
+        }
+    }
+
+    @Override
+    public int getChildrenCount(int groupPosition)
+    {
+        ArrayList<Skill> skills = listGroup.get(groupPosition).getSkills();
+        if(skills == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return skills.size();
         }
     }
 
@@ -159,6 +99,7 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
         return false;
     }
 
+    int trialCount = 0;
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
     {
@@ -221,30 +162,109 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
                     isNoneChecked = false;
                 }
             }
-        }
 
-        if(isAllChecked)
-        {
-            currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
-            groupCheckColor = context.getResources().getColor(R.color.colorAccent);
-            setCheckBoxColor(checkBox, groupCheckColor);
-            checkBox.setChecked(true);
-        }
-        else if(isNoneChecked)
-        {
-            currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
-            groupCheckColor = Color.GRAY;
-            setCheckBoxColor(checkBox, groupCheckColor);
-            checkBox.setChecked(false);
+            if(isAllChecked)
+            {
+                currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
+                groupCheckColor = context.getResources().getColor(R.color.colorAccent);
+                setCheckBoxColor(checkBox, groupCheckColor);
+                checkBox.setChecked(true);
+            }
+            else if(isNoneChecked)
+            {
+                currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
+                groupCheckColor = Color.GRAY;
+                setCheckBoxColor(checkBox, groupCheckColor);
+                checkBox.setChecked(false);
+            }
+            else
+            {
+                currentGenericSkill.setChecked(SkillCheckType.SOMECHECK);
+                groupCheckColor = Color.GRAY;
+                setCheckBoxColor(checkBox, groupCheckColor);
+                checkBox.setChecked(true);
+            }
         }
         else
         {
-            currentGenericSkill.setChecked(SkillCheckType.SOMECHECK);
-            groupCheckColor = Color.GRAY;
-            setCheckBoxColor(checkBox, groupCheckColor);
-            checkBox.setChecked(true);
+            SkillCheckType checkType = currentGenericSkill.isChecked();
+            if(checkType == SkillCheckType.ALLCHECK || checkType == SkillCheckType.SOMECHECK)
+            {
+                currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
+                groupCheckColor = context.getResources().getColor(R.color.colorAccent);
+                setCheckBoxColor(checkBox, groupCheckColor);
+                checkBox.setChecked(true);
+            }
+            else
+            {
+                currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
+                groupCheckColor = Color.GRAY;
+                setCheckBoxColor(checkBox, groupCheckColor);
+                checkBox.setChecked(false);
+            }
         }
 
+        return convertView;
+    }
+
+    View dialogView;
+    AlertDialog popupDialog;
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
+    {
+        if(convertView == null)
+        {
+            LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.row_skill, null);
+        }
+
+        String skillName = ((Skill)getChild(groupPosition, childPosition)).getName();
+
+        TextView textView = convertView.findViewById(R.id.skillName);
+        textView.setText(skillName);
+
+        boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
+        CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
+        checkBox.setTag(new int[]{groupPosition, childPosition});
+        checkBox.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
+                int[] pos = (int[]) checkBox1.getTag();
+                ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
+                notifyDataSetChanged();
+            }
+        });
+
+        //if(checkBox.isChecked() ^ skillChecked)
+        checkBox.setChecked(skillChecked);
+
+        ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
+        skillInfo.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                //Show popup
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.skill_info_dialog, null);
+                builder.setView(dialogView);
+                popupDialog = builder.create();
+                popupDialog.show();
+
+                ImageView sendButton = dialogView.findViewById(R.id.closeSkillInfo);
+                sendButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        popupDialog.dismiss();
+                    }
+                });
+            }
+        });
 
         return convertView;
     }
@@ -261,6 +281,24 @@ public class SkillsTabAdapter extends AnimatedExpandableListAdapter
     public boolean isChildSelectable(int groupPosition, int childPosition)
     {
         return true;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
+    public void onGroupExpanded(int groupPosition)
+    {
+
+    }
+
+    @Override
+    public void onGroupCollapsed(int groupPosition)
+    {
+
     }
 
     public void addGenericSkill(GenericSkill newGenericSkill)
