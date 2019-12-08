@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true"
     tools:context=".Growth.Skills.SkillsTabFragment">
-    
+
     <ExpandableListView
         android:id="@+id/expandable_lst"
         android:layout_width="match_parent"

@@ -99,7 +99,6 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
         return false;
     }
 
-    int trialCount = 0;
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
     {

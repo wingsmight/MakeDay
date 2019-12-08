@@ -8,6 +8,8 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
+
     <include
         layout="@layout/main_content"
         android:layout_width="match_parent"

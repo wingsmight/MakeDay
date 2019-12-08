@@ -12,7 +12,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class SplashActivity extends AppCompatActivity implements GoogleAuthListener
 {
@@ -31,6 +33,9 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
         googleSignInHelper = new GoogleAuthHelper(this, this, this);
 
         intent = new Intent(this, MainActivity.class);
+
+        ActionBar toolbar = getSupportActionBar();
+        toolbar.hide();
 
         skipAuth = findViewById(R.id.skip_auth);
         signInButton = findViewById(R.id.sign_in_button);

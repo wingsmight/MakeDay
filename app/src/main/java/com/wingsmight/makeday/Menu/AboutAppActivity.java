@@ -5,8 +5,8 @@ import android.os.Bundle;
 import com.wingsmight.makeday.R;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class AboutAppActivity extends AppCompatActivity
 {
@@ -16,12 +16,11 @@ public class AboutAppActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_app);
 
-        Toolbar toolbar = findViewById(R.id.aboutAppToolBar);
+        ActionBar toolbar = getSupportActionBar();
         toolbar.setTitle(getResources().getString(R.string.AboutApp));
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setDisplayShowHomeEnabled(true);
     }
 
     @Override

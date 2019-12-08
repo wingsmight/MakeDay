@@ -7,7 +7,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.wingsmight.makeday.Growth.GrowthFragment;
 import com.wingsmight.makeday.Menu.MenuFragment;
@@ -37,6 +40,36 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
 
         SetupBottomNavigationView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.edit);
+        if(item!=null)
+        {
+            item.setVisible(false);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.edit:
+            {
+                Toast.makeText(this, "MainActivity", Toast.LENGTH_SHORT);
+
+                break;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void SetupBottomNavigationView()
