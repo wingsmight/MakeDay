@@ -9,7 +9,16 @@
     android:paddingBottom="5dp"
     android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
     android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft"
+    android:id="@+id/rowSkillLayout"
     >
+    <ImageView
+        android:id="@+id/dragHandleSkill"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:srcCompat="@drawable/ic_drag_handle"
+        />
 
     <CheckBox
         android:id="@+id/skillCheckBox"
@@ -51,6 +60,15 @@
             android:layout_gravity="end|center"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
+            />
+
+        <ImageView
+            android:id="@+id/deleteSkill"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_weight="0"
+            android:layout_marginRight="15dp"
+            app:srcCompat="@drawable/ic_delete"
             />
 
     </LinearLayout>

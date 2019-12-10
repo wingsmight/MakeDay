@@ -28,6 +28,7 @@
             android:label="@string/app_name"
             />
         <activity android:name=".Menu.AboutAppActivity" />
+        <activity android:name=".DragNDropExpandableListView.DragNDropListActivity" />
     </application>
 
 </manifest>

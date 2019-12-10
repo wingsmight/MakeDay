@@ -1,32 +1,20 @@
 package com.wingsmight.makeday.Growth.Skills;
 
-import com.wingsmight.makeday.Growth.Skills.Skill;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GenericSkill
+public class GenericSkill implements Serializable
 {
-    private int serialNumber;
     private String name;
     private SkillCheckType isChecked;
+    private boolean isExpanded;
     private ArrayList<Skill> skills;
 
-    public GenericSkill(int serialNumber, String name, SkillCheckType isChecked, ArrayList<Skill> skills)
+    public GenericSkill(String name, SkillCheckType isChecked, ArrayList<Skill> skills)
     {
-        this.serialNumber = serialNumber;
         this.name = name;
         this.isChecked = isChecked;
         this.skills = skills;
-    }
-
-    public int getSerialNumber()
-    {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(int serialNumber)
-    {
-        this.serialNumber = serialNumber;
     }
 
     public String getName()
@@ -39,12 +27,12 @@ public class GenericSkill
         this.name = name;
     }
 
-    public SkillCheckType isChecked()
+    public SkillCheckType getCheckType()
     {
         return isChecked;
     }
 
-    public void setChecked(SkillCheckType checked)
+    public void setCheckType(SkillCheckType checked)
     {
         isChecked = checked;
         if(checked == SkillCheckType.ALLCHECK)
@@ -76,6 +64,16 @@ public class GenericSkill
     public void setSkills(ArrayList<Skill> skills)
     {
         this.skills = skills;
+    }
+
+    public boolean getIsExpanded()
+    {
+        return isExpanded;
+    }
+
+    public void setIsExpanded(boolean isExpanded)
+    {
+        this.isExpanded = isExpanded;
     }
 }
 

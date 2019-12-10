@@ -1,37 +1,32 @@
 package com.wingsmight.makeday.Growth.Skills;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.ExpandableListAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
-import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListAdapter;
+import com.wingsmight.makeday.DragNDropExpandableListView.DragNDropListActivity;
+import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
+import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.CompoundButtonCompat;
 
-public class SkillsTabAdapter extends BaseExpandableListAdapter
+public class SkillsTabAdapter extends BaseExpandableListAdapter implements RemoveListener, DropListener
 {
     Context context;
     List<GenericSkill> listGroup;
@@ -78,7 +73,16 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
     @Override
     public Object getChild(int groupPosition, int childPosition)
     {
-        return listGroup.get(groupPosition).getSkills().get(childPosition);
+        ArrayList skills = listGroup.get(groupPosition).getSkills();
+        if(skills == null) return null;
+        if(skills.size() != 0 && childPosition < skills.size())
+        {
+            return skills.get(childPosition);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     @Override
@@ -100,7 +104,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
+    public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
     {
         if(convertView == null)
         {
@@ -110,10 +114,31 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
 
         GenericSkill currentGenericSkill = (GenericSkill)getGroup(groupPosition);
 
+        if(currentGenericSkill == null)
+        {
+            return convertView;
+        }
+
         //Set name
         String genericSkillName = currentGenericSkill.getName();
+
+        if (genericSkillName.equals(""))
+        {
+            TextView textView = convertView.findViewById(R.id.genericSkillName);
+            textView.setText("");
+            CheckBox checkBox = convertView.findViewById(R.id.genericSkillCheckBox);
+            setCheckBoxColor(checkBox, context.getResources().getColor(R.color.white));
+            ImageView deleteGenericSkill = convertView.findViewById(R.id.deleteGenericSkill);
+            deleteGenericSkill.setImageDrawable(null);
+            ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+            dragHandle.setImageDrawable(null);
+
+            return convertView;
+        }
+
         TextView textView = convertView.findViewById(R.id.genericSkillName);
         textView.setText(genericSkillName);
+        textView.setTextColor(context.getResources().getColor(android.R.color.tab_indicator_text));
 
         //Init checkboxes
         CheckBox checkBox = convertView.findViewById(R.id.genericSkillCheckBox);
@@ -126,17 +151,17 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
                 int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
 
                 GenericSkill skill = (GenericSkill) getGroup(pos);
-                if(skill.isChecked() == SkillCheckType.ALLCHECK)
+                if(skill.getCheckType() == SkillCheckType.ALLCHECK)
                 {
-                    skill.setChecked(SkillCheckType.NOONECHECK);
+                    skill.setCheckType(SkillCheckType.NOONECHECK);
                 }
-                else if(skill.isChecked() == SkillCheckType.NOONECHECK)
+                else if(skill.getCheckType() == SkillCheckType.NOONECHECK)
                 {
-                    skill.setChecked(SkillCheckType.ALLCHECK);
+                    skill.setCheckType(SkillCheckType.ALLCHECK);
                 }
-                else
+                else if(skill.getCheckType() == SkillCheckType.SOMECHECK)
                 {
-                    skill.setChecked(SkillCheckType.ALLCHECK);
+                    skill.setCheckType(SkillCheckType.ALLCHECK);
                 }
 
                 notifyDataSetChanged();
@@ -164,21 +189,21 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
 
             if(isAllChecked)
             {
-                currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.ALLCHECK);
                 groupCheckColor = context.getResources().getColor(R.color.colorAccent);
                 setCheckBoxColor(checkBox, groupCheckColor);
                 checkBox.setChecked(true);
             }
             else if(isNoneChecked)
             {
-                currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.NOONECHECK);
                 groupCheckColor = Color.GRAY;
                 setCheckBoxColor(checkBox, groupCheckColor);
                 checkBox.setChecked(false);
             }
             else
             {
-                currentGenericSkill.setChecked(SkillCheckType.SOMECHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.SOMECHECK);
                 groupCheckColor = Color.GRAY;
                 setCheckBoxColor(checkBox, groupCheckColor);
                 checkBox.setChecked(true);
@@ -186,22 +211,42 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
         }
         else
         {
-            SkillCheckType checkType = currentGenericSkill.isChecked();
+            SkillCheckType checkType = currentGenericSkill.getCheckType();
             if(checkType == SkillCheckType.ALLCHECK || checkType == SkillCheckType.SOMECHECK)
             {
-                currentGenericSkill.setChecked(SkillCheckType.ALLCHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.ALLCHECK);
                 groupCheckColor = context.getResources().getColor(R.color.colorAccent);
                 setCheckBoxColor(checkBox, groupCheckColor);
                 checkBox.setChecked(true);
             }
             else
             {
-                currentGenericSkill.setChecked(SkillCheckType.NOONECHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.NOONECHECK);
                 groupCheckColor = Color.GRAY;
                 setCheckBoxColor(checkBox, groupCheckColor);
                 checkBox.setChecked(false);
             }
         }
+
+        ImageView deleteGenericSkill = convertView.findViewById(R.id.deleteGenericSkill);
+        Drawable deleteGenericSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
+        deleteGenericSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
+        deleteGenericSkill.setImageDrawable(deleteGenericSkillDrawable);
+
+        deleteGenericSkill.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((DragNDropListActivity)context).remove(groupPosition);
+                onRemove(groupPosition);
+            }
+        });
+
+        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
+        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
+        dragHandle.setImageDrawable(dragHandleDrawable);
 
         return convertView;
     }
@@ -209,7 +254,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
     View dialogView;
     AlertDialog popupDialog;
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
     {
         if(convertView == null)
         {
@@ -217,10 +262,14 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
             convertView = layoutInflater.inflate(R.layout.row_skill, null);
         }
 
-        String skillName = ((Skill)getChild(groupPosition, childPosition)).getName();
+        Skill skill = (Skill)getChild(groupPosition, childPosition);
+        if(skill == null) return convertView;
+
+        String skillName = skill.getName();
 
         TextView textView = convertView.findViewById(R.id.skillName);
         textView.setText(skillName);
+        textView.setTextColor(context.getResources().getColor(android.R.color.tab_indicator_text));
 
         boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
         CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
@@ -237,7 +286,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
             }
         });
 
-        //if(checkBox.isChecked() ^ skillChecked)
+        //if(checkBox.getCheckType() ^ skillChecked)
         checkBox.setChecked(skillChecked);
 
         ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
@@ -265,12 +314,36 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
             }
         });
 
+        ImageView deleteSkill = convertView.findViewById(R.id.deleteSkill);
+        Drawable deleteSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
+        deleteSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
+        deleteSkill.setImageDrawable(deleteSkillDrawable);
+
+        deleteSkill.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((DragNDropListActivity)context).removeChild(groupPosition, childPosition);
+                onRemoveChild(groupPosition, childPosition);
+            }
+        });
+
+        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
+        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
+        dragHandle.setImageDrawable(dragHandleDrawable);
+
+        skillInfo.setVisibility(View.GONE);
+
         return convertView;
     }
 
     private void setCheckBoxColor(CheckBox checkBox, int groupCheckColor)
     {
-        Drawable drawable =  CompoundButtonCompat.getButtonDrawable(checkBox);
+        checkBox.setButtonDrawable(R.drawable.abc_btn_check_material);
+
+        Drawable drawable = CompoundButtonCompat.getButtonDrawable(checkBox);
         drawable = DrawableCompat.wrap(drawable);
         DrawableCompat.setTint(drawable, groupCheckColor);
         DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
@@ -307,5 +380,184 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter
             listGroup = new ArrayList<>();
         }
         listGroup.add(newGenericSkill);
+    }
+
+    private int prevTo = -1;
+    private int prevToChild = -1;
+    private GenericSkill fromSkill;
+    private Skill fromSkillChild;
+    @Override
+    public void onSwap(int from, int to, ListView listView, int prevPosition)
+    {
+        Log.i("msg", "onSwap: " + Integer.toString(from) + " to " + Integer.toString(to) + "; with prevTo = " + Integer.toString(prevTo));
+//        if(prevPosition == -1)
+//        {
+//            return;
+//        }
+
+        int[] fromTo = convertToNormalFromTo(from, to);
+        from = fromTo[0];
+        to = fromTo[1];
+
+        //GenericSkill temp = listGroup.remove(from);
+        //temp.setIsExpanded(false);
+
+        if(prevTo != -1)
+        {
+            listGroup.remove(prevTo);
+            prevTo = to;
+        }
+        else
+        {
+            fromSkill = listGroup.remove(from);
+            prevTo = to;
+        }
+        listGroup.add(to,new GenericSkill("", SkillCheckType.NOONECHECK, null));
+
+        notifyDataSetChanged();
+    }
+    @Override
+    public void onSwapChild(int from, int to, ListView listView, int prevPosition)
+    {
+        Log.i("msg", "onSwap: " + Integer.toString(from) + " to " + Integer.toString(to) + "; with prevTo = " + Integer.toString(prevToChild));
+//        if(prevPosition == -1)
+//        {
+//            return;
+//        }
+
+        int[] fromTo = convertToNormalFromToChild(from, to);
+        from = fromTo[0];
+        to = fromTo[1];
+        int groupPos = fromTo[2];
+
+        ArrayList<Skill> skills = listGroup.get(groupPos).getSkills();
+
+        if(prevToChild != -1)
+        {
+            skills.remove(prevToChild);
+            prevToChild = to;
+        }
+        else
+        {
+            fromSkillChild = skills.remove(from);
+            prevToChild = to;
+        }
+        skills.add(to,new Skill("", false));
+
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStartDrag(int from, ListView listView)
+    {
+        prevTo = -1;
+        prevToChild = -1;
+    }
+
+    @Override
+    public void onDrop(int from, int to)
+    {
+        int[] fromTo = convertToNormalFromTo(from, to);
+        from = fromTo[0];
+        to = fromTo[1];
+
+        listGroup.remove(to);
+        GenericSkill temp = fromSkill;
+        temp.setIsExpanded(false);
+
+        listGroup.add(to,temp);
+        listGroup.get(from).setIsExpanded(true);
+
+        notifyDataSetChanged();
+        fromSkill = null;
+    }
+
+    @Override
+    public void onDropChild(int from, int to)
+    {
+        int[] fromTo = convertToNormalFromToChild(from, to);
+        from = fromTo[0];
+        to = fromTo[1];
+        int groupPos = fromTo[2];
+
+        ArrayList<Skill> skills = listGroup.get(groupPos).getSkills();
+        skills.remove(to);
+        Skill temp = fromSkillChild;
+
+        skills.add(to,temp);
+
+        notifyDataSetChanged();
+        fromSkillChild = null;
+    }
+
+    @Override
+    public void onRemove(int which)
+    {
+        if (which < 0 || which > listGroup.size()) return;
+        listGroup.remove(which);
+
+        //notifyDataSetChanged();
+    }
+
+    public void onRemoveChild(int groupPosition, int childPosition)
+    {
+        if (groupPosition < 0 || groupPosition > listGroup.size() || childPosition < 0 || childPosition > listGroup.get(groupPosition).getSkills().size()) return;
+
+        listGroup.get(groupPosition).getSkills().remove(childPosition);
+
+        //notifyDataSetChanged();
+    }
+
+    public void update()
+    {
+        notifyDataSetChanged();
+    }
+
+    private int[] convertToNormalFromTo(int from, int to)
+    {
+        for (int i = 0; i < listGroup.size() && i < to && i < from; i++)
+        {
+            GenericSkill genericSkill = listGroup.get(i);
+            if(genericSkill.getIsExpanded())
+            {
+                ArrayList<Skill> skills = genericSkill.getSkills();
+                if(skills == null) continue;
+
+                if(skills.size() < to)
+                {
+                    to -= skills.size();
+                }
+                if(skills.size() < from)
+                {
+                    from -= skills.size();
+                }
+            }
+        }
+
+        return new int[]{from, to};
+    }
+
+    private int[] convertToNormalFromToChild(int from, int to)
+    {
+        int groupPos = 0;
+        while (!listGroup.get(groupPos).getIsExpanded() || listGroup.get(groupPos).getSkills().size() == 0)
+        {
+            groupPos++;
+        }
+
+        from -= (groupPos + 1);
+        to -= (groupPos + 1);
+
+        ArrayList<Skill> skills = listGroup.get(groupPos).getSkills();
+        if(to < 0)
+        {
+            to = 0;
+        }
+        else if(to >= skills.size())
+        {
+            to = skills.size() - 1;
+        }
+
+        return new int[]{from, to, groupPos};
     }
 }

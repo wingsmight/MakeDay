@@ -34,6 +34,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
 
         intent = new Intent(this, MainActivity.class);
 
+        if (BuildConfig.DEBUG) {
+            closeSplash();
+        }
+
         ActionBar toolbar = getSupportActionBar();
         toolbar.hide();
 

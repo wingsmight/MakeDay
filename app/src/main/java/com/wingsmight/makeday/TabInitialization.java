@@ -54,15 +54,15 @@ public class TabInitialization
         ArrayList<GenericSkill> genericSkills = new ArrayList<>();
 
         ArrayList<Skill> subSkills = new ArrayList<>();
-        subSkills.add(new Skill(1, "Успехи", false));
-        subSkills.add(new Skill(2, "Идеи", false));
-        subSkills.add(new Skill(3, "Осознания / инсайты", false));
-        genericSkills.add(new GenericSkill(1, "Дневник Успехов", SkillCheckType.NOONECHECK, subSkills));
+        subSkills.add(new Skill("Успехи", false));
+        subSkills.add(new Skill("Идеи", false));
+        subSkills.add(new Skill("Осознания / инсайты", false));
+        genericSkills.add(new GenericSkill("Дневник Успехов", SkillCheckType.NOONECHECK, subSkills));
 
         subSkills = new ArrayList<>();
-        subSkills.add(new Skill(1, "Поднавык 1", false));
-        subSkills.add(new Skill(2, "Поднавык 2", false));
-        genericSkills.add(new GenericSkill(2, "Навык 2", SkillCheckType.NOONECHECK, subSkills));
+        subSkills.add(new Skill("Поднавык 1", false));
+        subSkills.add(new Skill("Поднавык 2", false));
+        genericSkills.add(new GenericSkill("Навык 2", SkillCheckType.NOONECHECK, subSkills));
 
         return genericSkills;
     }

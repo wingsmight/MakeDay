@@ -13,6 +13,9 @@
     <color name="darkGrey">#696969</color>
     <color name="white">#ffffff</color>
     <color name="transparent">#00000000</color>
+    <color name="transportSkillViewColor">#7BB4A0</color>
+    <color name="redDelete">#FF5858</color>
+    <color name="dragHandle">#696969</color>
 
     <color name="RowDayFeedDate">#079466</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.wingsmight.makeday.Growth.Skills;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -8,15 +9,9 @@ import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,30 +19,24 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.wingsmight.makeday.AnimatedExpandableListView.AnimatedExpandableListView;
+import com.wingsmight.makeday.DragNDropExpandableListView.DragNDropListActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 public class SkillsTabFragment extends Fragment implements ExpandableListView.OnGroupExpandListener
 {
-    TabName tabName = TabName.SKILLS;
+    public static TabName tabName = TabName.SKILLS;
     private ExpandableListView expandableListView;
     private SkillsTabAdapter expandableListAdapter;
     private int lastExpandedPosition = -1;
@@ -78,7 +67,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         //Expandable list
         genericSkills = SaveLoad.load(tabName);//initGenericSkills();
 
-        expandableListView = view.findViewById(R.id.expandable_lst);
+        expandableListView = view.findViewById(R.id.expandableListSkills);
         expandableListAdapter = new SkillsTabAdapter(getContext(), genericSkills);
         expandableListView.setAdapter(expandableListAdapter);
         expandableListView.setOnGroupExpandListener(this);
@@ -87,118 +76,6 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         setHasOptionsMenu(true);
 
         //Drag n drop
-//        ItemTouchHelper helper =  new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0)
-//        {
-//            @Override
-//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target)
-//            {
-//                int positionDragged = dragged.getAdapterPosition();
-//                int positionTarget = target.getAdapterPosition();
-//
-//                Collections.swap(genericSkills, positionDragged, positionTarget);
-//
-//                expandableListAdapter.notifyDataSetChanged();;
-//
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
-//            {
-//
-//            }
-//        });
-//        //helper.attachToRecyclerView(expandableListView);
-
-        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP)
-                {
-                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-                    int childPosition = ExpandableListView.getPackedPositionChild(id);
-
-                    // You now have everything that you would as if this was an OnChildClickListener()
-                    // Add your logic here.
-
-                    //include this:
-                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-                    view.startDrag(null, shadowBuilder, genericSkills.get(position)/*.getItemAtPosition(position)*/, 0);
-                    // Return true as we are handling the event.
-                    return true;
-                }
-
-                return false;
-            }
-        });
-        expandableListView.setOnDragListener(new AdapterView.OnDragListener()
-        {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        //layoutParams = (RelativeLayout.LayoutParams)v.getLayoutParams();
-                        Log.i("msg", "Action is DragEvent.ACTION_DRAG_STARTED");
-
-                        // Do nothing
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.i("msg", "Action is DragEvent.ACTION_DRAG_ENTERED");
-                        int x_cord = (int) event.getX();
-                        int y_cord = (int) event.getY();
-                        break;
-
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        Log.i("msg", "Action is DragEvent.ACTION_DRAG_EXITED");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-
-                        break;
-
-                    case DragEvent.ACTION_DRAG_LOCATION:
-                        Log.i("msg", "Action is DragEvent.ACTION_DRAG_LOCATION");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-                        Log.i("msg", Integer.toString(x_cord) + "," + Integer.toString(y_cord));
-                        int nPointToPosition = expandableListView.pointToPosition(x_cord,y_cord);
-                        if(expandableListView.getItemAtPosition(nPointToPosition)!= null)
-                        {
-
-                            // THE FUN PART IS HERE!
-                            // ******this is the header list number******
-                            int ngroupPosition = expandableListView.getPackedPositionGroup(expandableListView.getExpandableListPosition(nPointToPosition));
-
-                            // ******this is the child position******
-                            int nchildPosition = expandableListView.getPackedPositionChild(expandableListView.getExpandableListPosition(nPointToPosition));
-
-                        }
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        Log.i("msg", "Action is DragEvent.ACTION_DRAG_ENDED");
-                        // This is where I added some activities....
-                        GenericSkill draggedGenericSkill = genericSkills.get(3);
-                        GenericSkill draggedOnGenericSkill = genericSkills.get(0);
-                        genericSkills.set(0, draggedGenericSkill);
-                        genericSkills.set(3, draggedOnGenericSkill);
-
-                        expandableListAdapter.notifyDataSetChanged();
-                        break;
-
-                    case DragEvent.ACTION_DROP:
-                        Log.i("msg", "ACTION_DROP event");
-                        // This is also a good place, place with it and see what you want to do
-                        break;
-
-                    default:
-                        break;
-                }
-                //return value
-                return true;
-            }
-        });//end DragListener
     }
 
     @Override
@@ -220,9 +97,26 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_SKILLS && resultCode == RESULT_OK)
+        {
+            genericSkills = (ArrayList<GenericSkill>)data.getSerializableExtra(SkillsTabFragment.EXTRA_SKILLS);
+            expandableListAdapter.update();
+        }
+    }
+
+    public static String EXTRA_SKILLS = "genericSkills";
+    public static int REQUEST_CODE_SKILLS = 101;
+
     private void startEditMode()
     {
-
+        Intent intent = new Intent(getContext(), DragNDropListActivity.class);
+        intent.putExtra(EXTRA_SKILLS, (ArrayList<GenericSkill>) genericSkills);
+        startActivityForResult(intent, REQUEST_CODE_SKILLS);
     }
 
     private void backgroundSave(){
@@ -304,7 +198,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
 
         if(!newSkillName.equals(""))
         {
-            GenericSkill newGenericSkill = new GenericSkill(expandableListAdapter.getGroupCount() + 1, newSkillName, SkillCheckType.NOONECHECK, null);
+            GenericSkill newGenericSkill = new GenericSkill(newSkillName, SkillCheckType.NOONECHECK, null);
             //genericSkills.add(newGenericSkill);
             expandableListAdapter.addGenericSkill(newGenericSkill);
         }
