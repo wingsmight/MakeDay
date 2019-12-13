@@ -16,6 +16,7 @@
 
 package com.wingsmight.makeday.DragNDropExpandableListView;
 
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 
 /**
@@ -34,7 +35,7 @@ public interface DropListener {
 	 */
 	void onDrop(int from, int to);
 	void onDropChild(int from, int to);
-	void onSwap(int from, int to, ListView listView, int prevPosition);
-	void onSwapChild(int from, int to, ListView listView, int prevPosition);
-	void onStartDrag(int from, ListView listView);
+	void onSwap(int from, int to, ExpandableListView listView, int prevPosition);
+	void onSwapChild(int from, int to, ExpandableListView listView, int prevPosition);
+	void onStartDrag(int from, ExpandableListView listView);
 }

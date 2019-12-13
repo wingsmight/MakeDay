@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_edit"
         android:title="Изменить"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/save"
+        android:icon="@drawable/ic_save"
+        android:title="Сохранить"
+        app:showAsAction="always" />
 </menu>

@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wingsmight.makeday.Growth.Skills.SkillsTabFragment;
 import com.wingsmight.makeday.R;
 
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -40,15 +41,13 @@ import androidx.core.widget.CompoundButtonCompat;
 
 public class DragNDropListView extends ExpandableListView
 {
-
 	boolean mDragMode;
 
 	int mStartPosition;
 	int mEndPosition;
-	int mDragPointOffset;//Used to adjust drag view location
+	int mDragPointOffset;
 	
 	ImageView mDragView;
-	GestureDetector mGestureDetector;
 	
 	DropListener mDropListener;
 	RemoveListener mRemoveListener;
@@ -73,7 +72,13 @@ public class DragNDropListView extends ExpandableListView
 	int prevPoint = -1;
 	int prevCorrectPoint = -10;
 	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
+	public boolean onTouchEvent(MotionEvent ev)
+    {
+        if(!SkillsTabFragment.isEditMode)
+        {
+            return super.onTouchEvent(ev);
+        }
+
 		final int action = ev.getAction();
 		final int x = (int) ev.getX();
 		final int y = (int) ev.getY();	
@@ -201,11 +206,11 @@ public class DragNDropListView extends ExpandableListView
                 {
                     if(isDragChild)
                     {
-                        mDropListener.onDropChild(mStartPosition, mEndPosition);//TODO
+                        mDropListener.onDropChild(mStartPosition, mEndPosition);
                     }
                     else
                     {
-                        mDropListener.onDrop(mStartPosition, mEndPosition);//TODO
+                        mDropListener.onDrop(mStartPosition, mEndPosition);
                     }
                 }
 
@@ -290,8 +295,6 @@ public class DragNDropListView extends ExpandableListView
         Context context = getContext();
         ImageView v = new ImageView(context);
         v.setImageBitmap(bitmap);
-        //v.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_delete));
-        //v.setBackgroundColor(getContext().getResources().getColor(R.color.transportSkillViewColor));
 
         WindowManager mWindowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         mWindowManager.addView(v, mWindowParams);
@@ -313,28 +316,4 @@ public class DragNDropListView extends ExpandableListView
             mDragView = null;
         }
 	}
-
-
-
-//	private GestureDetector createFlingDetector() {
-//		return new GestureDetector(getContext(), new SimpleOnGestureListener() {
-//            @Override
-//            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-//                    float velocityY) {
-//                if (mDragView != null) {
-//                	int deltaX = (int)Math.abs(e1.getX()-e2.getX());
-//                	int deltaY = (int)Math.abs(e1.getY() - e2.getY());
-//
-//                	if (deltaX > mDragView.getWidth()/2 && deltaY < mDragView.getHeight()) {
-//                		mRemoveListener.onRemove(mStartPosition);
-//                	}
-//
-//                	stopDrag(mStartPosition - getFirstVisiblePosition());
-//
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//	}
 }

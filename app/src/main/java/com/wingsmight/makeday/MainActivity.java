@@ -47,29 +47,18 @@ public class MainActivity extends AppCompatActivity
     {
         getMenuInflater().inflate(R.menu.actionbar_menu, menu);
 
-        MenuItem item = menu.findItem(R.id.edit);
-        if(item!=null)
+        MenuItem itemEdit = menu.findItem(R.id.edit);
+        if(itemEdit!=null)
         {
-            item.setVisible(false);
+            itemEdit.setVisible(false);
+        }
+        MenuItem itemSave = menu.findItem(R.id.save);
+        if(itemSave!=null)
+        {
+            itemSave.setVisible(false);
         }
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.edit:
-            {
-                Toast.makeText(this, "MainActivity", Toast.LENGTH_SHORT);
-
-                break;
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void SetupBottomNavigationView()

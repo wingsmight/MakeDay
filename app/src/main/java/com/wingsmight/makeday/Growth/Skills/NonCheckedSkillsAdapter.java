@@ -12,11 +12,9 @@ import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
-import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
@@ -27,19 +25,29 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.fragment.app.Fragment;
 
-public class SkillsTabAdapter extends BaseExpandableListAdapter implements RemoveListener, DropListener
+public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implements RemoveListener, DropListener
 {
     Context context;
     Fragment fragment;
-    NonCheckedSkillsAdapter nonCheckedSkillsAdapter;
     List<GenericSkill> listGroup;
+    SkillsTabAdapter skillsTabAdapter;
 
-    public SkillsTabAdapter(Context context, Fragment fragment, List<GenericSkill> listGroup, NonCheckedSkillsAdapter nonCheckedSkillsAdapter)
+    public NonCheckedSkillsAdapter(Context context, Fragment fragment, List<GenericSkill> listGroup)
     {
         this.context = context;
         this.fragment = fragment;
         this.listGroup = listGroup;
-        this.nonCheckedSkillsAdapter = nonCheckedSkillsAdapter;
+    }
+
+    public void addSkillTabAdapter(SkillsTabAdapter skillsTabAdapter)
+    {
+        this.skillsTabAdapter = skillsTabAdapter;
+    }
+
+    public void addNonCheckedSkill(GenericSkill newSkill)
+    {
+        listGroup.add(0, newSkill);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -117,11 +125,9 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             convertView = layoutInflater.inflate(R.layout.row_generic_skill, null);
         }
 
-        GenericSkill currentGenericSkill = (GenericSkill)getGroup(groupPosition);
+        final GenericSkill currentGenericSkill = (GenericSkill)getGroup(groupPosition);
 
-        SkillCheckType checkType = currentGenericSkill.getCheckType();
-
-        if(currentGenericSkill == null)// || checkType == SkillCheckType.NOONECHECK)
+        if(currentGenericSkill == null)
         {
             return convertView;
         }
@@ -155,23 +161,29 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             @Override
             public void onClick(View v)
             {
-                int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
+                currentGenericSkill.setCheckType(SkillCheckType.ALLCHECK);
+                skillsTabAdapter.addGenericSkill(currentGenericSkill);
+                skillsTabAdapter.update();
+                listGroup.remove(currentGenericSkill);
+                update();
 
-                GenericSkill skill = (GenericSkill) getGroup(pos);
-                if(skill.getCheckType() == SkillCheckType.ALLCHECK)
-                {
-                    skill.setCheckType(SkillCheckType.NOONECHECK);
-
-                    listGroup.remove(skill);
-                    nonCheckedSkillsAdapter.addNonCheckedSkill(skill);
-                    notifyDataSetChanged();
-                }
-                else if(skill.getCheckType() == SkillCheckType.SOMECHECK)
-                {
-                    skill.setCheckType(SkillCheckType.ALLCHECK);
-
-                    notifyDataSetChanged();
-                }
+//                int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
+//
+//                GenericSkill skill = (GenericSkill) getGroup(pos);
+//                if(skill.getCheckType() == SkillCheckType.ALLCHECK)
+//                {
+//                    skill.setCheckType(SkillCheckType.NOONECHECK);
+//                }
+//                else if(skill.getCheckType() == SkillCheckType.NOONECHECK)
+//                {
+//                    skill.setCheckType(SkillCheckType.ALLCHECK);
+//                }
+//                else if(skill.getCheckType() == SkillCheckType.SOMECHECK)
+//                {
+//                    skill.setCheckType(SkillCheckType.ALLCHECK);
+//                }
+//
+//                notifyDataSetChanged();
             }
         });
 
@@ -203,11 +215,10 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             }
             else if(isNoneChecked)
             {
-                currentGenericSkill.setCheckType(SkillCheckType.SOMECHECK);
+                currentGenericSkill.setCheckType(SkillCheckType.NOONECHECK);
                 groupCheckColor = Color.GRAY;
                 setCheckBoxColor(checkBox, groupCheckColor);
-                checkBox.setChecked(true);
-
+                checkBox.setChecked(false);
             }
             else
             {
@@ -219,7 +230,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         }
         else
         {
-            checkType = currentGenericSkill.getCheckType();
+            SkillCheckType checkType = currentGenericSkill.getCheckType();
             if(checkType == SkillCheckType.ALLCHECK || checkType == SkillCheckType.SOMECHECK)
             {
                 currentGenericSkill.setCheckType(SkillCheckType.ALLCHECK);
@@ -237,6 +248,10 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         }
 
         ImageView deleteGenericSkill = convertView.findViewById(R.id.deleteGenericSkill);
+        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+        //deleteGenericSkill.setVisibility(View.GONE);
+        dragHandle.setVisibility(View.GONE);
+
         Drawable deleteGenericSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
         deleteGenericSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
         deleteGenericSkill.setImageDrawable(deleteGenericSkillDrawable);
@@ -246,26 +261,10 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             @Override
             public void onClick(View v)
             {
-                ((SkillsTabFragment)fragment).remove(groupPosition);
+                ((SkillsTabFragment)fragment).removeNonChecked(groupPosition);
                 onRemove(groupPosition);
             }
         });
-
-        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
-        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
-        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
-        dragHandle.setImageDrawable(dragHandleDrawable);
-
-        if(((SkillsTabFragment)fragment).isEditMode)
-        {
-            deleteGenericSkill.setVisibility(View.VISIBLE);
-            dragHandle.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            deleteGenericSkill.setVisibility(View.GONE);
-            dragHandle.setVisibility(View.GONE);
-        }
 
         return convertView;
     }
@@ -333,37 +332,25 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         });
 
         ImageView deleteSkill = convertView.findViewById(R.id.deleteSkill);
-        Drawable deleteSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
-        deleteSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
-        deleteSkill.setImageDrawable(deleteSkillDrawable);
+        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+
+        //deleteSkill.setVisibility(View.GONE);
+        dragHandle.setVisibility(View.GONE);
+
+        Drawable deleteGenericSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
+        deleteGenericSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
+        deleteSkill.setImageDrawable(deleteGenericSkillDrawable);
 
         deleteSkill.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                ((SkillsTabFragment) fragment).removeChild(groupPosition, childPosition);
-                onRemoveChild(groupPosition, childPosition);
+                ((SkillsTabFragment)fragment).removeNonCheckedChild(groupPosition, childPosition);
+                onRemoveChild(groupPosition, childPosition
+                );
             }
         });
-
-        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
-        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
-        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
-        dragHandle.setImageDrawable(dragHandleDrawable);
-
-        if(((SkillsTabFragment)fragment).isEditMode)
-        {
-            deleteSkill.setVisibility(View.VISIBLE);
-            dragHandle.setVisibility(View.VISIBLE);
-            skillInfo.setVisibility(View.GONE);
-        }
-        else
-        {
-            deleteSkill.setVisibility(View.GONE);
-            dragHandle.setVisibility(View.GONE);
-            skillInfo.setVisibility(View.VISIBLE);
-        }
 
         return convertView;
     }
