@@ -81,8 +81,26 @@ public class DragNDropListView extends ExpandableListView
 
 		final int action = ev.getAction();
 		final int x = (int) ev.getX();
-		final int y = (int) ev.getY();	
-		
+		int y = (int) ev.getY();
+
+		int topLimit = 0;
+		int bottomLimit = this.getHeight();
+
+        Log.i("msg", "y = " + Integer.toString(y));
+        if (mDragView != null)
+        {
+            topLimit = mDragView.getHeight() / 2;
+            bottomLimit = this.getHeight() - mDragView.getHeight() / 2;
+            if(y < topLimit)
+            {
+                y = topLimit;
+            }
+            else if(y > bottomLimit)
+            {
+                y = bottomLimit;
+            }
+        }
+
 		if (action == MotionEvent.ACTION_DOWN && x < this.getWidth()/4) {
 			mDragMode = true;
 		}
@@ -197,9 +215,6 @@ public class DragNDropListView extends ExpandableListView
                     }
                 }
 
-                Log.i("msg", Integer.toString(mStartPosition));
-                Log.i("msg", Integer.toString(mEndPosition));
-
                 stopDrag(mStartPosition - getFirstVisiblePosition());
 
                 if (mDropListener != null && mStartPosition != INVALID_POSITION && mEndPosition != INVALID_POSITION)
@@ -276,7 +291,7 @@ public class DragNDropListView extends ExpandableListView
         // Create a copy of the drawing cache so that it does not get recycled
         // by the framework when the list tries to clean up memory
         Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
-        
+
         WindowManager.LayoutParams mWindowParams = new WindowManager.LayoutParams();
         mWindowParams.gravity = Gravity.TOP;
         mWindowParams.x = 0;

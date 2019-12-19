@@ -11,6 +11,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -114,6 +116,12 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         nonCheckedView.setVisibility(View.GONE);
         nonCheckedListAdapter.addSkillTabAdapter(expandableListAdapter);
         nonCheckedView.setAdapter(nonCheckedListAdapter);
+    }
+
+    private int getHeightOfView(View contentview) {
+        contentview.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        //contentview.getMeasuredWidth();
+        return contentview.getMeasuredHeight();
     }
 
     private int lastExpandedPosition = -1;
