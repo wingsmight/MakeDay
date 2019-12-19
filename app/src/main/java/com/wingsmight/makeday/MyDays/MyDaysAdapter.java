@@ -39,7 +39,7 @@ public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysView
     {
         final RowDayModel rowDayModel = rowDayModelArrayList.get(i);
 
-        viewHolder.date.setText(rowDayModel.getDay() + " " + rowDayModel.getMonth());
+        viewHolder.date.setText(rowDayModel.getDayOfWeek() + ", " + rowDayModel.getDay() + " " + rowDayModel.getMonth());
         viewHolder.doList.setText(rowDayModel.getDoneString());
         viewHolder.undoList.setText(rowDayModel.getUndoneString());
     }

@@ -1,13 +1,14 @@
 package com.wingsmight.makeday.Tracker.TimeTracking;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class TimeTrackingDay<TI>
 {
-    private int day, month, year;
+    private int day, dayOfWeek, month, year;
     private ArrayList<TI> timeIntervals;
 
-    public TimeTrackingDay(int day, int month, int year, ArrayList<TI> timeIntervals)
+    public TimeTrackingDay(int day, int dayOfWeek, int year, ArrayList<TI> timeIntervals, int month)
     {
         this.day = day;
         this.month = month;
@@ -28,6 +29,47 @@ public class TimeTrackingDay<TI>
     public void setTimeIntervals(ArrayList<TI> timeIntervals)
     {
         this.timeIntervals = timeIntervals;
+    }
+
+    public String getDayOfWeek()
+    {
+        switch (day) {
+            case Calendar.MONDAY:
+            {
+                return "Пнд";
+            }
+            case Calendar.TUESDAY:
+            {
+                return "Втр";
+            }
+            case Calendar.WEDNESDAY:
+            {
+                return "Срд";
+            }
+            case Calendar.THURSDAY:
+            {
+                return "Чтв";
+            }
+            case Calendar.FRIDAY:
+            {
+                return "Птн";
+            }
+            case Calendar.SATURDAY:
+            {
+                return "Суб";
+            }
+            case Calendar.SUNDAY:
+            {
+                return "Вск";
+            }
+        }
+
+        return "Пн";
+    }
+
+    public void setDayOfWeek(int dayOfWeek)
+    {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public int getDay()

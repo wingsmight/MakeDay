@@ -38,7 +38,7 @@ public class EmotionsTabAdapter extends RecyclerView.Adapter<EmotionsTabAdapter.
     public void onBindViewHolder(@NonNull TimeTrackingDayViewHolder viewHolder, int i)
     {
         final TimeTrackingDay<EmotionEvent> timeTrackingDay = timeTrackingDays.get(i);
-        viewHolder.eventsDate.setText(timeTrackingDay.getDay() + " " + timeTrackingDay.getMonth());
+        viewHolder.eventsDate.setText(timeTrackingDay.getDayOfWeek() + ", " + timeTrackingDay.getDay() + " " + timeTrackingDay.getMonth());
 
         // Create layout manager with initial prefetch item count
         LinearLayoutManager layoutManager = new LinearLayoutManager(

@@ -3,15 +3,18 @@ package com.wingsmight.makeday.Tracker;
 import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 
+import java.util.Calendar;
+
 public class RowDayModel
 {
-    int day, year;
+    int day, dayOfWeek, year;
     String month;
     String[] doneDeals, undoneDeals;
 
-    public RowDayModel(int day, String month, int year, String[] doneDeals, String[] undoneDeals)
+    public RowDayModel(int day, int dayOfWeek, int year, String[] doneDeals, String[] undoneDeals, String month)
     {
         this.day = day;
+        this.dayOfWeek = dayOfWeek;
         this.year = year;
         this.month = month;
         this.doneDeals = doneDeals;
@@ -21,6 +24,47 @@ public class RowDayModel
     public int getDay()
     {
         return day;
+    }
+
+    public String getDayOfWeek()
+    {
+        switch (day) {
+            case Calendar.MONDAY:
+            {
+                return "Пнд";
+            }
+            case Calendar.TUESDAY:
+            {
+                return "Втр";
+            }
+            case Calendar.WEDNESDAY:
+            {
+                return "Срд";
+            }
+            case Calendar.THURSDAY:
+            {
+                return "Чтв";
+            }
+            case Calendar.FRIDAY:
+            {
+                return "Птн";
+            }
+            case Calendar.SATURDAY:
+            {
+                return "Суб";
+            }
+            case Calendar.SUNDAY:
+            {
+                return "Вск";
+            }
+        }
+
+        return "Пн";
+    }
+
+    public void setDayOfWeek(int dayOfWeek)
+    {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public void setDay(int day)

@@ -24,7 +24,7 @@ public class TabInitialization
         String[] undoneDeals = {
                 "дело 3"
         };
-        RowDayModel rowDayModel = new RowDayModel(16, "ноября", 2019, doneDeals, undoneDeals);
+        RowDayModel rowDayModel = new RowDayModel(16, 5, 2019, doneDeals, undoneDeals, "ноября");
         days.add(rowDayModel);
 
         String[] doneDeals2 = {
@@ -34,10 +34,9 @@ public class TabInitialization
                 "дело 2",
                 "дело 3"
         };
-        RowDayModel rowDayModel2 = new RowDayModel(15, "ноября", 2019, doneDeals2, undoneDeals2);
+        RowDayModel rowDayModel2 = new RowDayModel(15, 4, 2019, doneDeals2, undoneDeals2, "ноября");
         days.add(rowDayModel2);
 
-        rowDayModel2.setDay(14);
         days.add(rowDayModel2);
         days.add(rowDayModel2);
         days.add(rowDayModel2);
@@ -81,7 +80,7 @@ public class TabInitialization
     public static ArrayList<TimeTrackingDay<Event>> initTimeTrackingTab() {
         ArrayList<TimeTrackingDay<Event>> itemList = new ArrayList<>();
         for (int i=1; i<10; i++) {
-            TimeTrackingDay<Event> item = new TimeTrackingDay<Event>(i, 11, 2019, buildSubItemList());
+            TimeTrackingDay<Event> item = new TimeTrackingDay<Event>(i, i < 6 ? i : i - 5, 2019, buildSubItemList(), 11);
             itemList.add(item);
         }
         return itemList;
@@ -102,7 +101,7 @@ public class TabInitialization
     public static ArrayList<TimeTrackingDay<EmotionEvent>> initEmotionsTab() {
         ArrayList<TimeTrackingDay<EmotionEvent>> itemList = new ArrayList<>();
         for (int i=1; i<10; i++) {
-            TimeTrackingDay<EmotionEvent> item = new TimeTrackingDay<EmotionEvent>(i, 12, 2019, buildSubItemListEmotion());
+            TimeTrackingDay<EmotionEvent> item = new TimeTrackingDay<EmotionEvent>(i, i < 6 ? i : i - 5, 2019, buildSubItemListEmotion(), 12);
             itemList.add(item);
         }
         return itemList;

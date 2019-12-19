@@ -38,7 +38,7 @@ public class TimeTrackingTabAdapter extends RecyclerView.Adapter<TimeTrackingTab
     public void onBindViewHolder(@NonNull TimeTrackingDayViewHolder viewHolder, int i)
     {
         final TimeTrackingDay timeTrackingDay = timeTrackingDays.get(i);
-        viewHolder.eventsDate.setText(timeTrackingDay.getDay() + " " + timeTrackingDay.getMonth());
+        viewHolder.eventsDate.setText(timeTrackingDay.getDayOfWeek() + ", " + timeTrackingDay.getDay() + " " + timeTrackingDay.getMonth());
 
         // Create layout manager with initial prefetch item count
         LinearLayoutManager layoutManager = new LinearLayoutManager(
