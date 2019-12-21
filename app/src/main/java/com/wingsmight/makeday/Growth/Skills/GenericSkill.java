@@ -56,6 +56,15 @@ public class GenericSkill implements Serializable
         }
     }
 
+    public void addChild(Skill skill)
+    {
+        if(skills == null)
+        {
+            skills = new ArrayList<>();
+        }
+        skills.add(skill);
+    }
+
     public ArrayList<Skill> getSkills()
     {
         return skills;

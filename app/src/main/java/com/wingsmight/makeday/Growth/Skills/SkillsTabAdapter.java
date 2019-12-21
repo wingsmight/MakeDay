@@ -1,19 +1,26 @@
 package com.wingsmight.makeday.Growth.Skills;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
 import com.wingsmight.makeday.MainActivity;
@@ -61,11 +68,11 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         ArrayList<Skill> skills = listGroup.get(groupPosition).getSkills();
         if(skills == null)
         {
-            return 0;
+            return 1;
         }
         else
         {
-            return skills.size();
+            return skills.size() + 1;
         }
     }
 
@@ -282,90 +289,202 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         }
 
         Skill skill = (Skill)getChild(groupPosition, childPosition);
-        if(skill == null) return convertView;
-
-        String skillName = skill.getName();
-
-        TextView textView = convertView.findViewById(R.id.skillName);
-        textView.setText(skillName);
-        textView.setTextColor(context.getResources().getColor(android.R.color.tab_indicator_text));
-
-        boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
-        CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
-        checkBox.setTag(new int[]{groupPosition, childPosition});
-        checkBox.setOnClickListener(new View.OnClickListener()
+        if(skill == null)
         {
-            @Override
-            public void onClick(View v)
+            View addSubSkillLayout = convertView.findViewById(R.id.addSubSkillLayout);
+            View subSkillLayout = convertView.findViewById(R.id.subSkillLayout);
+
+            addSubSkillLayout.setVisibility(View.VISIBLE);
+            subSkillLayout.setVisibility(View.GONE);
+
+            ImageView addSubSkill = convertView.findViewById(R.id.addSubSkillButton);
+            Drawable addSubSkillDrawable = context.getResources().getDrawable(R.drawable.ic_add);
+            addSubSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.blueAdd), PorterDuff.Mode.SRC_IN);
+            addSubSkill.setImageDrawable(addSubSkillDrawable);
+            addSubSkill.setOnClickListener(new View.OnClickListener()
             {
-                CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
-                int[] pos = (int[]) checkBox1.getTag();
-                ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
-                notifyDataSetChanged();
+                @Override
+                public void onClick(View v)
+                {
+                    AddSubSkill(groupPosition, v);
+                }
+            });
+        }
+        else
+        {
+            String skillName = skill.getName();
+
+            TextView textView = convertView.findViewById(R.id.skillName);
+            textView.setText(skillName);
+            textView.setTextColor(context.getResources().getColor(android.R.color.tab_indicator_text));
+
+            boolean skillChecked = ((Skill)getChild(groupPosition, childPosition)).isChecked();
+            CheckBox checkBox = convertView.findViewById(R.id.skillCheckBox);
+            checkBox.setTag(new int[]{groupPosition, childPosition});
+            checkBox.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    CheckBox checkBox1 = v.findViewById(R.id.skillCheckBox);
+                    int[] pos = (int[]) checkBox1.getTag();
+                    ((Skill) getChild(pos[0], pos[1])).setChecked(((CheckBox) v).isChecked());
+                    notifyDataSetChanged();
+                }
+            });
+
+            checkBox.setChecked(skillChecked);
+
+            ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
+            skillInfo.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    //Show popup
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.skill_info_dialog, null);
+                    builder.setView(dialogView);
+                    popupDialog = builder.create();
+                    popupDialog.show();
+
+                    ImageView sendButton = dialogView.findViewById(R.id.closeSkillInfo);
+                    sendButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            popupDialog.dismiss();
+                        }
+                    });
+                }
+            });
+
+            ImageView deleteSkill = convertView.findViewById(R.id.deleteSkill);
+            Drawable deleteSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
+            deleteSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
+            deleteSkill.setImageDrawable(deleteSkillDrawable);
+
+            deleteSkill.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    ((SkillsTabFragment) fragment).removeChild(groupPosition, childPosition);
+                    onRemoveChild(groupPosition, childPosition);
+                }
+            });
+
+            ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
+            Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
+            dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
+            dragHandle.setImageDrawable(dragHandleDrawable);
+
+            if(((SkillsTabFragment)fragment).isEditMode)
+            {
+                deleteSkill.setVisibility(View.VISIBLE);
+                dragHandle.setVisibility(View.VISIBLE);
+                skillInfo.setVisibility(View.GONE);
             }
-        });
-
-        checkBox.setChecked(skillChecked);
-
-        ImageView skillInfo = convertView.findViewById(R.id.skillInfo);
-        skillInfo.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
+            else
             {
-                //Show popup
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.skill_info_dialog, null);
-                builder.setView(dialogView);
-                popupDialog = builder.create();
-                popupDialog.show();
+                deleteSkill.setVisibility(View.GONE);
+                dragHandle.setVisibility(View.GONE);
+                skillInfo.setVisibility(View.VISIBLE);
+            }
 
-                ImageView sendButton = dialogView.findViewById(R.id.closeSkillInfo);
-                sendButton.setOnClickListener(new View.OnClickListener()
+            View addSubSkillLayout = convertView.findViewById(R.id.addSubSkillLayout);
+            View subSkillLayout = convertView.findViewById(R.id.subSkillLayout);
+            if(childPosition == getChildrenCount(groupPosition) - 1)
+            {
+                addSubSkillLayout.setVisibility(View.VISIBLE);
+                subSkillLayout.setVisibility(View.GONE);
+
+                ImageView addSubSkill = convertView.findViewById(R.id.addSubSkillButton);
+                Drawable addSubSkillDrawable = context.getResources().getDrawable(R.drawable.ic_add);
+                addSubSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.blueAdd), PorterDuff.Mode.SRC_IN);
+                addSubSkill.setImageDrawable(addSubSkillDrawable);
+                addSubSkill.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
                     {
-                        popupDialog.dismiss();
+                        AddSubSkill(groupPosition, v);
                     }
                 });
             }
-        });
+            else
+            {
+                addSubSkillLayout.setVisibility(View.GONE);
+                subSkillLayout.setVisibility(View.VISIBLE);
+            }
+        }
 
-        ImageView deleteSkill = convertView.findViewById(R.id.deleteSkill);
-        Drawable deleteSkillDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
-        deleteSkillDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
-        deleteSkill.setImageDrawable(deleteSkillDrawable);
+        return convertView;
+    }
 
-        deleteSkill.setOnClickListener(new View.OnClickListener()
+    View addSubSkillDialogView;
+    AlertDialog popupAddSubSkillDialog;
+    private void AddSubSkill(final int groupIndex, View view)
+    {
+        //Show popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        addSubSkillDialogView = ((Activity)context).getLayoutInflater().inflate(R.layout.add_skill_dialog, null);
+        builder.setView(addSubSkillDialogView);
+        popupAddSubSkillDialog = builder.create();
+        popupAddSubSkillDialog.show();
+
+        TextView addNewSkillTitle = addSubSkillDialogView.findViewById(R.id.addNewSkillTitle);
+        addNewSkillTitle.setText("Добавить поднавык");
+
+        ImageButton sendButton = addSubSkillDialogView.findViewById(R.id.dialog_like_bt);
+        sendButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                ((SkillsTabFragment) fragment).removeChild(groupPosition, childPosition);
-                onRemoveChild(groupPosition, childPosition);
+                TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
+                AddSkillFromInput(groupIndex, inputEditText);
             }
         });
 
-        ImageView dragHandle = convertView.findViewById(R.id.dragHandleSkill);
-        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
-        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
-        dragHandle.setImageDrawable(dragHandleDrawable);
-
-        if(((SkillsTabFragment)fragment).isEditMode)
+        //Enter button -> add goal
+        final TextInputEditText inputEditText = addSubSkillDialogView.findViewById(R.id.newGoalInput);
+        inputEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
-            deleteSkill.setVisibility(View.VISIBLE);
-            dragHandle.setVisibility(View.VISIBLE);
-            skillInfo.setVisibility(View.GONE);
-        }
-        else
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
+                AddSkillFromInput(groupIndex, inputEditText);
+
+                notifyDataSetChanged();
+                return true;
+            }
+        });
+
+        //Show keyboard
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+
+                inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN , 0, 0, 0));
+                inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
+            }
+        }, 500);
+    }
+
+    private void AddSkillFromInput(int groupIndex, TextInputEditText inputEditText)
+    {
+        String newSkillName = inputEditText.getText().toString();
+
+        if(!newSkillName.equals(""))
         {
-            deleteSkill.setVisibility(View.GONE);
-            dragHandle.setVisibility(View.GONE);
-            skillInfo.setVisibility(View.VISIBLE);
+            Skill newSkill = new Skill(newSkillName, true);
+
+            listGroup.get(groupIndex).addChild(newSkill);
         }
 
-        return convertView;
+        popupAddSubSkillDialog.dismiss();
     }
 
     private void setCheckBoxColor(CheckBox checkBox, int groupCheckColor)
@@ -476,15 +595,23 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         from = fromTo[0];
         to = fromTo[1];
 
-        listGroup.remove(to);
+        GenericSkill removingSkill = listGroup.remove(to);
         GenericSkill temp = fromSkill;
-        temp.setIsExpanded(false);
 
-        listGroup.add(to,temp);
-        listGroup.get(from).setIsExpanded(true);
+        if(temp != null)
+        {
+            temp.setIsExpanded(false);
 
-        notifyDataSetChanged();
-        fromSkill = null;
+            listGroup.add(to,temp);
+            listGroup.get(from).setIsExpanded(true);
+
+            notifyDataSetChanged();
+            fromSkill = null;
+        }
+        else
+        {
+            listGroup.add(to, removingSkill);
+        }
     }
 
     @Override

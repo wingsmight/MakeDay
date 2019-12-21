@@ -128,7 +128,7 @@ public class GoalsTabFragment extends Fragment
                 inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN , 0, 0, 0));
                 inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
             }
-        }, 1000);
+        }, 500);
     }
 
     private void AddGoalFromInput(TextInputEditText inputEditText)

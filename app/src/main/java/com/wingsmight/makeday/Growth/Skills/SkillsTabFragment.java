@@ -1,5 +1,6 @@
 package com.wingsmight.makeday.Growth.Skills;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
@@ -58,13 +60,14 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         return inflater.inflate(R.layout.fragment_skills, container, false);
     }
 
+    FloatingActionButton addButton;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
         //Add button
-        FloatingActionButton addButton = view.findViewById(R.id.addSkillButton);
+        addButton = view.findViewById(R.id.addSkillButton);
         addButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -116,12 +119,6 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         nonCheckedView.setVisibility(View.GONE);
         nonCheckedListAdapter.addSkillTabAdapter(expandableListAdapter);
         nonCheckedView.setAdapter(nonCheckedListAdapter);
-    }
-
-    private int getHeightOfView(View contentview) {
-        contentview.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        //contentview.getMeasuredWidth();
-        return contentview.getMeasuredHeight();
     }
 
     private int lastExpandedPosition = -1;
@@ -441,6 +438,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         isEditMode = true;
         expandableListAdapter.update();
         nonCheckedView.setVisibility(View.VISIBLE);
+        addButton.hide();
     }
 
     private void saveEditMode()
@@ -449,7 +447,8 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
         expandableListAdapter.update();
         nonCheckedView.setVisibility(View.GONE);
 
-        Toast.makeText(getContext(), "Измения сохранены", Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), "Измения сохранены", Toast.LENGTH_SHORT);
+        addButton.show();
     }
 
     private void backgroundSave(){
@@ -522,7 +521,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
                 inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN , 0, 0, 0));
                 inputEditText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
             }
-        }, 1000);
+        }, 500);
     }
 
     private void AddSkillFromInput(TextInputEditText inputEditText)

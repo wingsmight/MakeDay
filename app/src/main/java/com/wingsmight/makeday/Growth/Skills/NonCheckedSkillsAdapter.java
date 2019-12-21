@@ -280,6 +280,9 @@ public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implement
             convertView = layoutInflater.inflate(R.layout.row_skill, null);
         }
 
+        View addSubSkillLayout = convertView.findViewById(R.id.addSubSkillLayout);
+        addSubSkillLayout.setVisibility(View.GONE);
+
         Skill skill = (Skill)getChild(groupPosition, childPosition);
         if(skill == null) return convertView;
 
