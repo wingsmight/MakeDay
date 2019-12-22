@@ -1,11 +1,6 @@
 package com.wingsmight.makeday.Growth.Goals;
 
 import android.content.Context;
-
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.CompoundButtonCompat;
-import androidx.fragment.app.Fragment;
-
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -24,38 +19,44 @@ import com.wingsmight.makeday.R;
 
 import java.util.ArrayList;
 
-public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, DropListener
-{
-    private ArrayList<Goal> goals;
-    private NonCheckedGoalsTabAdapter nonCheckedGoalsTabAdapter;
-    private Fragment fragment;
-    private Context context;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.CompoundButtonCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
-    public GoalsTabAdapter(Context context, Fragment fragment, ArrayList<Goal> goals, NonCheckedGoalsTabAdapter nonCheckedGoalsTabAdapter)
+public class NonCheckedGoalsTabAdapter extends BaseAdapter implements RemoveListener, DropListener
+{
+    private ArrayList<Goal> nonCheckedGoals;
+    private Context context;
+    private Fragment fragment;
+    GoalsTabAdapter goalsTabAdapter;
+
+    public NonCheckedGoalsTabAdapter(Context context, Fragment fragment, ArrayList<Goal> nonCheckedGoals)
     {
-        this.goals = goals;
+        this.nonCheckedGoals = nonCheckedGoals;
         this.fragment = fragment;
-        this.nonCheckedGoalsTabAdapter = nonCheckedGoalsTabAdapter;
         this.context = context;
     }
 
     @Override
     public int getCount()
     {
-        if(goals == null)
+        if(nonCheckedGoals == null)
         {
             return 0;
         }
         else
         {
-            return goals.size();
+            return nonCheckedGoals.size();
         }
     }
 
     @Override
     public Object getItem(int position)
     {
-        return goals.get(position);
+        return nonCheckedGoals.get(position);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
             convertView = LayoutInflater.from(context).inflate(R.layout.row_goal, parent, false);
         }
 
-        Goal currentGoal = (Goal)getItem(position);
+        final Goal currentGoal = (Goal)getItem(position);
 
         //Set name
         String GoalName = currentGoal.getName();
@@ -103,22 +104,11 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
             @Override
             public void onClick(View v)
             {
-                int pos = (Integer) v.findViewById(R.id.goalCheckBox).getTag();
-
-                Goal goal = (Goal) getItem(pos);
-                if(goal.getIsChecked())
-                {
-                    goal.setIsChecked(false);
-
-                    goals.remove(goal);
-                    nonCheckedGoalsTabAdapter.addGoal(goal);
-                }
-                else
-                {
-                    goal.setIsChecked(true);
-                }
-
-                notifyDataSetChanged();
+                currentGoal.setIsChecked(true);
+                goalsTabAdapter.addGoal(currentGoal);
+                goalsTabAdapter.update();
+                nonCheckedGoals.remove(currentGoal);
+                update();
             }
         });
 
@@ -144,31 +134,26 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
         Drawable deleteGoalDrawable = context.getResources().getDrawable(R.drawable.ic_delete);
         deleteGoalDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.redDelete), PorterDuff.Mode.SRC_IN);
         deleteGoal.setImageDrawable(deleteGoalDrawable);
-
         deleteGoal.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                ((GoalsTabFragment)fragment).remove(position);
+                ((GoalsTabFragment)fragment).removeNonChecked(position);
                 onRemove(position);
             }
         });
 
         ImageView dragHandle = convertView.findViewById(R.id.dragHandleGoal);
-        Drawable dragHandleDrawable = context.getResources().getDrawable(R.drawable.ic_drag_handle);
-        dragHandleDrawable.mutate().setColorFilter(context.getResources().getColor(R.color.dragHandle), PorterDuff.Mode.SRC_IN);
-        dragHandle.setImageDrawable(dragHandleDrawable);
+        dragHandle.setVisibility(View.GONE);
 
         if(GoalsTabFragment.isEditMode)
         {
             deleteGoal.setVisibility(View.VISIBLE);
-            dragHandle.setVisibility(View.VISIBLE);
         }
         else
         {
             deleteGoal.setVisibility(View.GONE);
-            dragHandle.setVisibility(View.GONE);
         }
 
         return convertView;
@@ -184,15 +169,20 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
         DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
     }
 
-
     public void addGoal(Goal newGoal)
     {
-        if(goals == null)
+        if(nonCheckedGoals == null)
         {
-            goals = new ArrayList<>();
+            nonCheckedGoals = new ArrayList<>();
         }
-        goals.add(newGoal);
+        nonCheckedGoals.add(newGoal);
     }
+
+    public void addGoalsTabAdapter(GoalsTabAdapter goalsTabAdapter)
+    {
+        this.goalsTabAdapter = goalsTabAdapter;
+    }
+
 
     private int prevTo = -1;
     private int prevToChild = -1;
@@ -203,15 +193,15 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
     {
         if(prevTo != -1)
         {
-            goals.remove(prevTo);
+            nonCheckedGoals.remove(prevTo);
             prevTo = to;
         }
         else
         {
-            fromGoal = goals.remove(from);
+            fromGoal = nonCheckedGoals.remove(from);
             prevTo = to;
         }
-        goals.add(to, new Goal("", false));
+        nonCheckedGoals.add(to, new Goal("", false));
 
         notifyDataSetChanged();
     }
@@ -231,19 +221,19 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
     @Override
     public void onDrop(int from, int to)
     {
-        Goal removingGoal = goals.remove(to);
+        Goal removingGoal = nonCheckedGoals.remove(to);
         Goal temp = fromGoal;
 
         if(temp != null)
         {
-            goals.add(to,temp);
+            nonCheckedGoals.add(to,temp);
 
             notifyDataSetChanged();
             fromGoal = null;
         }
         else
         {
-            goals.add(to, removingGoal);
+            nonCheckedGoals.add(to, removingGoal);
         }
     }
 
@@ -256,8 +246,8 @@ public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, Drop
     @Override
     public void onRemove(int which)
     {
-        if (which < 0 || which > goals.size()) return;
-        goals.remove(which);
+        if (which < 0 || which > nonCheckedGoals.size()) return;
+        nonCheckedGoals.remove(which);
     }
 
     public void update()

@@ -6,14 +6,14 @@ import java.util.ArrayList;
 public class GenericSkill implements Serializable
 {
     private String name;
-    private SkillCheckType isChecked;
+    private SkillCheckType checkType;
     private boolean isExpanded;
     private ArrayList<Skill> skills;
 
     public GenericSkill(String name, SkillCheckType isChecked, ArrayList<Skill> skills)
     {
         this.name = name;
-        this.isChecked = isChecked;
+        this.checkType = isChecked;
         this.skills = skills;
     }
 
@@ -29,12 +29,12 @@ public class GenericSkill implements Serializable
 
     public SkillCheckType getCheckType()
     {
-        return isChecked;
+        return checkType;
     }
 
     public void setCheckType(SkillCheckType checked)
     {
-        isChecked = checked;
+        checkType = checked;
         if(checked == SkillCheckType.ALLCHECK)
         {
             setChildrenChecked(true);

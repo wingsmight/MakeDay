@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -294,7 +295,14 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             View addSubSkillLayout = convertView.findViewById(R.id.addSubSkillLayout);
             View subSkillLayout = convertView.findViewById(R.id.subSkillLayout);
 
-            addSubSkillLayout.setVisibility(View.VISIBLE);
+            if(SkillsTabFragment.isEditMode)
+            {
+                addSubSkillLayout.setVisibility(View.GONE);
+            }
+            else
+            {
+                addSubSkillLayout.setVisibility(View.VISIBLE);
+            }
             subSkillLayout.setVisibility(View.GONE);
 
             ImageView addSubSkill = convertView.findViewById(R.id.addSubSkillButton);
@@ -445,6 +453,8 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
             {
                 TextInputEditText inputEditText = ((View)v.getParent()).findViewById(R.id.newGoalInput);
                 AddSkillFromInput(groupIndex, inputEditText);
+
+                notifyDataSetChanged();
             }
         });
 
@@ -536,7 +546,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
     private Skill fromSkillChild;
 
     @Override
-    public void onSwap(int from, int to, ExpandableListView listView, int prevPosition)
+    public void onSwap(int from, int to, ListView listView, int prevPosition)
     {
         int[] fromTo = convertToNormalFromTo(from, to);
         from = fromTo[0];
@@ -557,7 +567,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
         notifyDataSetChanged();
     }
     @Override
-    public void onSwapChild(int from, int to, ExpandableListView listView, int prevPosition)
+    public void onSwapChild(int from, int to, ListView listView, int prevPosition)
     {
         int[] fromTo = convertToNormalFromToChild(from, to);
         from = fromTo[0];
@@ -582,7 +592,7 @@ public class SkillsTabAdapter extends BaseExpandableListAdapter implements Remov
     }
 
     @Override
-    public void onStartDrag(int from, ExpandableListView listView)
+    public void onStartDrag(int from, ListView listView)
     {
         prevTo = -1;
         prevToChild = -1;

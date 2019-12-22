@@ -11,6 +11,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
@@ -166,24 +167,6 @@ public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implement
                 skillsTabAdapter.update();
                 listGroup.remove(currentGenericSkill);
                 update();
-
-//                int pos = (Integer) v.findViewById(R.id.genericSkillCheckBox).getTag();
-//
-//                GenericSkill skill = (GenericSkill) getGroup(pos);
-//                if(skill.getCheckType() == SkillCheckType.ALLCHECK)
-//                {
-//                    skill.setCheckType(SkillCheckType.NOONECHECK);
-//                }
-//                else if(skill.getCheckType() == SkillCheckType.NOONECHECK)
-//                {
-//                    skill.setCheckType(SkillCheckType.ALLCHECK);
-//                }
-//                else if(skill.getCheckType() == SkillCheckType.SOMECHECK)
-//                {
-//                    skill.setCheckType(SkillCheckType.ALLCHECK);
-//                }
-//
-//                notifyDataSetChanged();
             }
         });
 
@@ -407,7 +390,7 @@ public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implement
     private Skill fromSkillChild;
 
     @Override
-    public void onSwap(int from, int to, ExpandableListView listView, int prevPosition)
+    public void onSwap(int from, int to, ListView listView, int prevPosition)
     {
         int[] fromTo = convertToNormalFromTo(from, to);
         from = fromTo[0];
@@ -428,7 +411,7 @@ public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implement
         notifyDataSetChanged();
     }
     @Override
-    public void onSwapChild(int from, int to, ExpandableListView listView, int prevPosition)
+    public void onSwapChild(int from, int to, ListView listView, int prevPosition)
     {
         int[] fromTo = convertToNormalFromToChild(from, to);
         from = fromTo[0];
@@ -453,7 +436,7 @@ public class NonCheckedSkillsAdapter extends BaseExpandableListAdapter implement
     }
 
     @Override
-    public void onStartDrag(int from, ExpandableListView listView)
+    public void onStartDrag(int from, ListView listView)
     {
         prevTo = -1;
         prevToChild = -1;

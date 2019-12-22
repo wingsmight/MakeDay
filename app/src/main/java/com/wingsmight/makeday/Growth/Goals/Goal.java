@@ -2,13 +2,23 @@ package com.wingsmight.makeday.Growth.Goals;
 
 public class Goal
 {
-    private int serialNumber;
     private String name;
+    private boolean isChecked;
 
-    public Goal(int serialNumber, String name)
+    public Goal(String name, boolean isChecked)
     {
-        this.serialNumber = serialNumber;
         this.name = name;
+        this.isChecked = isChecked;
+    }
+
+    public boolean getIsChecked()
+    {
+        return isChecked;
+    }
+
+    public void setIsChecked(boolean isChecked)
+    {
+        this.isChecked = isChecked;
     }
 
     public String getName()
@@ -19,15 +29,5 @@ public class Goal
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public int getSerialNumber()
-    {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(int serialNumber)
-    {
-        this.serialNumber = serialNumber;
     }
 }

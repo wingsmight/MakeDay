@@ -53,15 +53,15 @@ public class TabInitialization
         ArrayList<GenericSkill> genericSkills = new ArrayList<>();
 
         ArrayList<Skill> subSkills = new ArrayList<>();
-        subSkills.add(new Skill("Успехи", false));
-        subSkills.add(new Skill("Идеи", false));
-        subSkills.add(new Skill("Осознания / инсайты", false));
-        genericSkills.add(new GenericSkill("Дневник Успехов", SkillCheckType.NOONECHECK, subSkills));
+        subSkills.add(new Skill("Успехи", true));
+        subSkills.add(new Skill("Идеи", true));
+        subSkills.add(new Skill("Осознания / инсайты", true));
+        genericSkills.add(new GenericSkill("Дневник Успехов", SkillCheckType.ALLCHECK, subSkills));
 
         subSkills = new ArrayList<>();
-        subSkills.add(new Skill("Поднавык 1", false));
-        subSkills.add(new Skill("Поднавык 2", false));
-        genericSkills.add(new GenericSkill("Навык 2", SkillCheckType.NOONECHECK, subSkills));
+        subSkills.add(new Skill("Поднавык 1", true));
+        subSkills.add(new Skill("Поднавык 2", true));
+        genericSkills.add(new GenericSkill("Навык 2", SkillCheckType.ALLCHECK, subSkills));
 
         return genericSkills;
     }
@@ -71,7 +71,7 @@ public class TabInitialization
         ArrayList<Goal> goals = new ArrayList<>();
         for (int i = 1; i < 12; i++)
         {
-            goals.add(new Goal(i, "Цель..."));
+            goals.add(new Goal("Цель " + i + "...", true));
         }
 
         return goals;

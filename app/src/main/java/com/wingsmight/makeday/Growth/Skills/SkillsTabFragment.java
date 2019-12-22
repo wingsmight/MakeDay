@@ -166,7 +166,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
                 }
 
                 @Override
-                public void onSwap(int from, int to, ExpandableListView listView, int prevPosition)
+                public void onSwap(int from, int to, ListView listView, int prevPosition)
                 {
 
                     if (expandableListAdapter instanceof SkillsTabAdapter) {
@@ -176,7 +176,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
                 }
 
                 @Override
-                public void onSwapChild(int from, int to, ExpandableListView listView, int prevPosition)
+                public void onSwapChild(int from, int to, ListView listView, int prevPosition)
                 {
 
                     if (expandableListAdapter instanceof SkillsTabAdapter) {
@@ -186,7 +186,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
                 }
 
                 @Override
-                public void onStartDrag(int from, ExpandableListView listView)
+                public void onStartDrag(int from, ListView listView)
                 {
                     if (expandableListAdapter instanceof SkillsTabAdapter) {
                         ((SkillsTabAdapter)expandableListAdapter).onStartDrag(from, listView);
@@ -456,6 +456,7 @@ public class SkillsTabFragment extends Fragment implements ExpandableListView.On
             @Override
             public void run()
             {
+                genericSkills.addAll(nonCheckedGenericSkills);
                 SaveLoad.save(tabName, genericSkills);
             }
         };

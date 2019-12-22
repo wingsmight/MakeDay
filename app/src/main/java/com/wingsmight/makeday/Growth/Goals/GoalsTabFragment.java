@@ -1,6 +1,5 @@
 package com.wingsmight.makeday.Growth.Goals;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -10,18 +9,29 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.Gravity;
+
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.kyleduo.blurpopupwindow.library.BlurPopupWindow;
+import com.wingsmight.makeday.DragNDropExpandableListView.DragListener;
+import com.wingsmight.makeday.DragNDropExpandableListView.DragNDropGoalListView;
+import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
+import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
+import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
@@ -31,9 +41,13 @@ import java.util.ArrayList;
 public class GoalsTabFragment extends Fragment
 {
     TabName tabName = TabName.GOALS;
-    RecyclerView recyclerView;
+    ListView listView;
+    ListView nonCheckedListView;
     GoalsTabAdapter goalsTabAdapter;
+    NonCheckedGoalsTabAdapter nonCheckedGoalsTabAdapter;
+    FloatingActionButton addButton;
     ArrayList<Goal> goals;
+    ArrayList<Goal> nonCheckedGoals = new ArrayList();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -46,18 +60,19 @@ public class GoalsTabFragment extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
     {
-        recyclerView = view.findViewById(R.id.goalsRecyclerView);
+        listView = view.findViewById(android.R.id.list);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        // = FillRecyclerView();
         goals = SaveLoad.load(tabName);
+        for(int i = 0; i < goals.size(); i++)
+        {
+            if (!goals.get(i).getIsChecked())
+            {
+                nonCheckedGoals.add(goals.remove(i));
+                i--;
+            }
+        }
 
-        goalsTabAdapter = new GoalsTabAdapter(view.getContext(), goals);
-        recyclerView.setAdapter(goalsTabAdapter);
-
-        FloatingActionButton addButton = view.findViewById(R.id.addGoalButton);
+        addButton = view.findViewById(R.id.addGoalButton);
         addButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -66,6 +81,259 @@ public class GoalsTabFragment extends Fragment
                 AddGoal(view);
             }
         });
+
+        //ActionBar
+        setHasOptionsMenu(true);
+
+        //Drag and drop
+        nonCheckedGoalsTabAdapter = new NonCheckedGoalsTabAdapter(getActivity(), this, nonCheckedGoals);
+
+        listView = view.findViewById(android.R.id.list);
+        goalsTabAdapter = new GoalsTabAdapter(getActivity(), this, goals, nonCheckedGoalsTabAdapter);
+        listView.setAdapter(goalsTabAdapter);
+
+        if (listView instanceof DragNDropGoalListView)
+        {
+            ((DragNDropGoalListView) listView).setDropListener(mDropListener);
+            ((DragNDropGoalListView) listView).setRemoveListener(mRemoveListener);
+            ((DragNDropGoalListView) listView).setDragListener(mDragListener);
+        }
+
+        nonCheckedListView = view.findViewById(R.id.NonCheckedList);
+        nonCheckedListView.setVisibility(View.GONE);
+        nonCheckedGoalsTabAdapter.addGoalsTabAdapter(goalsTabAdapter);
+        nonCheckedListView.setAdapter(nonCheckedGoalsTabAdapter);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu)
+    {
+        final MenuItem itemEdit = menu.findItem(R.id.edit);
+        final MenuItem itemSave = menu.findItem(R.id.save);
+        if(itemEdit!=null)
+        {
+            itemEdit.setVisible(!isEditMode);
+            itemEdit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
+            {
+                @Override
+                public boolean onMenuItemClick(MenuItem item)
+                {
+                    itemEdit.setVisible(false);
+                    itemSave.setVisible(true);
+
+                    startEditMode();
+
+                    return true;
+                }
+            });
+        }
+
+        if(itemSave!=null)
+        {
+            itemSave.setVisible(isEditMode);
+            itemSave.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
+            {
+                @Override
+                public boolean onMenuItemClick(MenuItem item)
+                {
+                    itemEdit.setVisible(true);
+                    itemSave.setVisible(false);
+
+                    saveEditMode();
+
+                    return true;
+                }
+            });
+        }
+    }
+
+
+    private DropListener mDropListener =
+            new DropListener() {
+                public void onDrop(int from, int to) {
+
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onDrop(from, to);
+                        listView.invalidateViews();
+                    }
+                }
+
+                public void onDropChild(int from, int to) {
+
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onDropChild(from, to);
+                        listView.invalidateViews();
+                    }
+                }
+
+                @Override
+                public void onSwap(int from, int to, ListView listView, int prevPosition)
+                {
+
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onSwap(from, to, listView, prevPosition);
+                        listView.invalidateViews();
+                    }
+                }
+
+                @Override
+                public void onSwapChild(int from, int to, ListView listView, int prevPosition)
+                {
+
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onSwapChild(from, to, listView, prevPosition);
+                        listView.invalidateViews();
+                    }
+                }
+
+                @Override
+                public void onStartDrag(int from, ListView listView)
+                {
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onStartDrag(from, listView);
+                        listView.invalidateViews();
+                    }
+                }
+            };
+
+    private RemoveListener mRemoveListener =
+            new RemoveListener() {
+                public void onRemove(int which) {
+                    if (goalsTabAdapter instanceof GoalsTabAdapter) {
+                        ((GoalsTabAdapter)goalsTabAdapter).onRemove(which);
+                        listView.invalidateViews();
+                    }
+                }
+            };
+
+    public void remove(final int index)
+    {
+        Animation anim = AnimationUtils.loadAnimation(
+                getActivity(), android.R.anim.slide_out_right
+        );
+        anim.setDuration(350);
+
+        listView.getChildAt(index - listView.getFirstVisiblePosition()).startAnimation(anim);
+
+        new Handler().postDelayed(new Runnable() {
+
+            public void run() {
+
+//                FavouritesManager.getInstance().remove(
+//                        FavouritesManager.getInstance().getTripManagerAtIndex(index)
+//                );
+                //populateList();
+                goalsTabAdapter.update();
+
+            }
+
+        }, anim.getDuration());
+    }
+
+    public void removeNonChecked(final int index)
+    {
+        Animation anim = AnimationUtils.loadAnimation(
+                getActivity(), android.R.anim.slide_out_right
+        );
+        anim.setDuration(350);
+
+        nonCheckedListView.getChildAt(index - nonCheckedListView.getFirstVisiblePosition()).startAnimation(anim);
+
+        new Handler().postDelayed(new Runnable() {
+
+            public void run()
+            {
+                nonCheckedGoalsTabAdapter.update();
+
+            }
+
+        }, anim.getDuration());
+    }
+    int prevEmptySpacePosition = -1;
+    private DragListener mDragListener =
+            new DragListener() {
+
+                int backgroundColor = MainActivity.GetContext().getResources().getColor(R.color.colorBackground);
+                int defaultBackgroundColor;
+
+                public void onDrag(int x, int y, ListView listView)
+                {
+
+                }
+
+                public void onStartDrag(View itemView)
+                {
+                    prevEmptySpacePosition = -1;
+//                for(int i = 0; i < goals.size(); i++)
+//                {
+//                    getExpandableListView().collapseGroup(i);
+//                }
+
+                    defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor();
+                    itemView.setBackgroundColor(backgroundColor);
+
+                    int layoutId = itemView.getId();
+
+                    CheckBox checkBox = itemView.findViewById(R.id.goalCheckBox);
+                    if(checkBox != null)
+                    {
+                        checkBox.setVisibility(View.VISIBLE);
+                    }
+
+                    TextView goalName = itemView.findViewById(R.id.goalName);
+                    if(goalName != null)
+                    {
+                        goalName.setVisibility(View.VISIBLE);
+                        goalName.setTextColor(getResources().getColor(android.R.color.tab_indicator_text));
+                    }
+
+                    ImageView deleteGoal = itemView.findViewById(R.id.deleteGoal);
+                    if(deleteGoal != null)
+                    {
+                        deleteGoal.setVisibility(View.GONE);
+                    }
+                }
+
+                public void onStopDrag(View itemView)
+                {
+                    if(itemView == null) return;
+
+                    itemView.setVisibility(View.VISIBLE);
+                    itemView.setBackgroundColor(defaultBackgroundColor);
+
+                    CheckBox checkBox = itemView.findViewById(R.id.goalCheckBox);
+                    checkBox.setVisibility(View.VISIBLE);
+
+                    TextView goalName = itemView.findViewById(R.id.goalName);
+                    goalName.setVisibility(View.VISIBLE);
+                    goalName.setTextColor(getResources().getColor(android.R.color.tab_indicator_text));
+
+                    ImageView deleteGoal = itemView.findViewById(R.id.deleteGoal);
+                    if(deleteGoal != null)
+                    {
+                        deleteGoal.setVisibility(View.VISIBLE);
+                    }
+                }
+
+            };
+
+    public static boolean isEditMode = false;
+    private void startEditMode()
+    {
+        isEditMode = true;
+        goalsTabAdapter.update();
+        nonCheckedListView.setVisibility(View.VISIBLE);
+        addButton.hide();
+    }
+
+    private void saveEditMode()
+    {
+        isEditMode = false;
+        goalsTabAdapter.update();
+        nonCheckedListView.setVisibility(View.GONE);
+
+        Toast.makeText(getActivity(), "Измения сохранены", Toast.LENGTH_SHORT);
+        addButton.show();
     }
 
     private void backgroundSave(){
@@ -73,6 +341,7 @@ public class GoalsTabFragment extends Fragment
             @Override
             public void run()
             {
+                goals.addAll(nonCheckedGoals);
                 SaveLoad.save(tabName, goals);
             }
         };
@@ -137,7 +406,7 @@ public class GoalsTabFragment extends Fragment
 
         if(!newGoalName.equals(""))
         {
-            Goal newGoal = new Goal(goalsTabAdapter.getGoalsCount() + 1, newGoalName);
+            Goal newGoal = new Goal(newGoalName, true);
             goalsTabAdapter.addGoal(newGoal);
         }
 

@@ -5,19 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Growth.Goals.GoalsTabFragment">
+    android:animateLayoutChanges="true"
+    tools:context=".Growth.Skills.SkillsTabFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/goalsRecyclerView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <com.wingsmight.makeday.DragNDropExpandableListView.DragNDropGoalListView
+            android:id="@+id/android:list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:divider="@android:color/transparent"
+            android:groupIndicator="@null"
+            android:scrollbars="none"
+            >
+        </com.wingsmight.makeday.DragNDropExpandableListView.DragNDropGoalListView>
+
+        <ListView
+            android:id="@+id/NonCheckedList"
+            android:background="@color/superLightGrey"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@android:color/transparent"
+            android:groupIndicator="@null"
+            android:scrollbars="none"
+            >
+
+        </ListView>
+
+    </LinearLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addGoalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:contentDescription="Добавить цель"
+        android:contentDescription="Добавить навык"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="@color/white"
