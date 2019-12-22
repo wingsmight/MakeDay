@@ -59,9 +59,22 @@ public class TabInitialization
         genericSkills.add(new GenericSkill("Дневник Успехов", SkillCheckType.ALLCHECK, subSkills));
 
         subSkills = new ArrayList<>();
-        subSkills.add(new Skill("Поднавык 1", true));
-        subSkills.add(new Skill("Поднавык 2", true));
-        genericSkills.add(new GenericSkill("Навык 2", SkillCheckType.ALLCHECK, subSkills));
+        subSkills.add(new Skill("Чтение текстов", true));
+        subSkills.add(new Skill("Просмотр видео", true));
+        subSkills.add(new Skill("Прослушивание аудио", true));
+        subSkills.add(new Skill("Работа с приложением", true));
+        subSkills.add(new Skill("Занятие с преподавателем", true));
+        genericSkills.add(new GenericSkill("Иностранный язык", SkillCheckType.ALLCHECK, subSkills));
+
+        subSkills = new ArrayList<>();
+        subSkills.add(new Skill("Молитва (за своё)", true));
+        subSkills.add(new Skill("Молитва за других", true));
+        subSkills.add(new Skill("Чтение Библии", true));
+        subSkills.add(new Skill("Чтение духовной литературы", true));
+        subSkills.add(new Skill("Просмотр видео", true));
+        subSkills.add(new Skill("Прослушивание аудио", true));
+        genericSkills.add(new GenericSkill("Христианские практики", SkillCheckType.ALLCHECK, subSkills));
+
 
         return genericSkills;
     }
