@@ -1,12 +1,20 @@
 package com.wingsmight.makeday.Tracker.TimeTracking;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.RemoteInput;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,31 +25,33 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.TimePickerFragment;
+import com.wingsmight.makeday.Tracker.Event;
+import com.wingsmight.makeday.Tracker.ReceiveNotifyAnswer;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TimeTrackingTabFragment extends Fragment
 {
+    private static final String ACTION_SNOOZE = "ACTION_SNOOZE";
     public static int requestCode = 1111;
     private TabName tabName = TabName.TIME_TRACKING;
     private RecyclerView recyclerView;
-    private ArrayList<TimeTrackingDay> timeTrackingDays = new ArrayList<>();
-    private TimeTrackingTabAdapter timeTrackingTabAdapter;
+    private static ArrayList<TimeTrackingDay> timeTrackingDays = new ArrayList<>();
+    private static TimeTrackingTabAdapter timeTrackingTabAdapter;
 
     private static final int NOTIFY_ID = 101;
     private static String CHANNEL_ID = "what did you do channel";
@@ -167,53 +177,138 @@ public class TimeTrackingTabFragment extends Fragment
         });
     }
 
+    public static IntervalTrackingTime intervalTrackingTime;
     private void displayUserData(IntervalTrackingTime interval)
     {
-        //Toast.makeText(getContext(), interval, Toast.LENGTH_LONG).show();
+        intervalTrackingTime = interval;
     }
 
     private void launch()
     {
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_date_range_black_24dp)
-                        .setContentTitle("Чем занимались?")
-                        .setContentText("Чем занимались с " + "??:??" + " до " + "??:??" + "?")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        Context context = getContext();
 
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(getContext());
-        notificationManager.notify(NOTIFY_ID, builder.build());
+        RemoteInput remoteInput = new RemoteInput.Builder("key_text_reply")
+                .setLabel("Введите другой ответ...")
+                .build();
+
+        Intent replyIntent;
+        PendingIntent replyPendingIntent = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        {
+            replyIntent = new Intent("onNotifyButton");
+            replyPendingIntent = PendingIntent.getBroadcast(context,0, replyIntent, 0);
+        }
+        else
+        {
+            replyIntent = new Intent("onNotifyButton");
+            replyPendingIntent = PendingIntent.getBroadcast(context,0, replyIntent, 0);
+        }
+
+        NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_send_black_24dp,
+                "Ответить",
+                replyPendingIntent
+        ).addRemoteInput(remoteInput).build();
+
+        RemoteViews collapsedView = new RemoteViews(getContext().getPackageName(), R.layout.notification_collapsed);
+        RemoteViews expandedView = new RemoteViews(getContext().getPackageName(), R.layout.notification_expanded);
+
+        expandedView.setOnClickPendingIntent(R.id.notifyButton1, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick1));
+        expandedView.setOnClickPendingIntent(R.id.notifyButton2, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick2));
+        expandedView.setOnClickPendingIntent(R.id.notifyButton3, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick3));
+        expandedView.setOnClickPendingIntent(R.id.notifyButton4, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick4));
+        expandedView.setOnClickPendingIntent(R.id.notifyButton5, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick5));
+        expandedView.setOnClickPendingIntent(R.id.notifyButton6, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick6));
+
+
+        Date date = Calendar.getInstance().getTime();
+
+        int year = date.getYear() + 1900;
+        int month = date.getMonth();
+        int day = date.getDate();
+        int dayOfWeek = date.getDay();
+        int hours = date.getHours();
+        int minutes = date.getMinutes();
+
+        int timeDiff = intervalTrackingTime.getMinute();
+        long millisecondsDiff = timeDiff * 60000;
+        long beforeDateTime = date.getTime() - millisecondsDiff;
+        Date beforeDate = new Date(beforeDateTime);
+        int beforeHours = beforeDate.getHours();
+        int beforeMinutes = beforeDate.getMinutes();
+
+        expandedView.setTextViewText(R.id.WhatWasYouDoing, "Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
+                + " до " + hours + ":" + minutesToFullFormat(Integer.toString(minutes)) + "?");
+        collapsedView.setTextViewText(R.id.WhatWasYouDoing, "Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
+                + " до " + hours + ":" + minutesToFullFormat(Integer.toString(minutes)) + "?");
+
+
+        Notification notification = new NotificationCompat.Builder(context, "ChannelID")
+                .setSmallIcon(R.drawable.app_icon)
+                .setCustomBigContentView(expandedView)
+                .setCustomContentView(collapsedView)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .addAction(replyAction)
+                .setAutoCancel(true)
+                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                .build();
+
+        notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(1, notification);
     }
 
-    public void executePeriodicTask() {
-        final android.os.Handler handler = new android.os.Handler();
-        Timer timer = new Timer();
-        TimerTask doAsynchronousTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        try {
-                            try
-                            {
-                                //call the method that fetches your data here
+    private String minutesToFullFormat(String shortMinutes)
+    {
+        if(shortMinutes.length() == 1)
+        {
+            return "0" + shortMinutes;
+        }
+        else
+        {
+            return shortMinutes;
+        }
+    }
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+    private static NotificationManagerCompat notificationManager;
+    public static void cancelNotification(int id)
+    {
+        if(notificationManager != null)
+        {
+            notificationManager.cancel(id);
+        }
+    }
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+    private PendingIntent getPendingSelfIntent(Context context, String action) {
+        Intent intent = new Intent(context, ReceiveNotifyAnswer.class);
+        intent.setAction(action);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
+    }
+
+    public static void addEvent(Event event)
+    {
+        int size = timeTrackingDays.size();
+        if(size != 0)
+        {
+            if(event.getDay() >= timeTrackingDays.get(0).getDay())
+            {
+                ArrayList<Event> newEventsArray = new ArrayList();
+                newEventsArray.add(event);
+                timeTrackingDays.add(0, new TimeTrackingDay(event.getDay(), event.getDayOfWeek(), event.getMonth(), event.getYear(), newEventsArray));
             }
-        };
+            else
+            {
+                timeTrackingDays.get(0).AddTimeInterval(event);
+            }
+        }
+        else
+        {
+            ArrayList<Event> newEventsArray = new ArrayList();
+            newEventsArray.add(event);
+            timeTrackingDays.add(new TimeTrackingDay(event.getDay(), event.getDayOfWeek(), event.getMonth(), event.getYear(), newEventsArray));
+        }
 
-
-        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 50000 ms
-
+        timeTrackingTabAdapter.notifyDataSetChanged();
     }
 
     private void backgroundSave(){

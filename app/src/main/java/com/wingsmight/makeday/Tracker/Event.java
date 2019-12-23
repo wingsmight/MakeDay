@@ -4,9 +4,9 @@ public class Event extends TimeInterval
 {
     private String eventText;
 
-    public Event(int day, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String eventText)
+    public Event(int day, int dayOfWeek, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String eventText)
     {
-        super(day, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter);
+        super(day, dayOfWeek, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter);
 
         this.eventText = eventText;
     }

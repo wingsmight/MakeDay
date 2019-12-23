@@ -11,6 +11,11 @@ public class IntervalTrackingTime
         this.minute = minute;
     }
 
+    public int getMinute()
+    {
+        return minute;
+    }
+
     public String getTime()
     {
         String time;

@@ -1,15 +1,13 @@
 package com.wingsmight.makeday.Tracker;
 
-
-import java.text.SimpleDateFormat;
-
 public abstract class TimeInterval
 {
-    private int day, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter;
+    private int day, dayOfWeek, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter;
 
-    public TimeInterval(int day, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter)
+    public TimeInterval(int day, int dayOfWeek, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter)
     {
         this.day = day;
+        this.dayOfWeek = dayOfWeek;
         this.month = month;
         this.year = year;
         this.hoursBefore = hoursBefore;
@@ -33,6 +31,16 @@ public abstract class TimeInterval
         {
             return "0" + String.valueOf(time);
         }
+    }
+
+    public int getDayOfWeek()
+    {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(int dayOfWeek)
+    {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public int getDay()

@@ -28,7 +28,13 @@
             android:label="@string/app_name"
             />
         <activity android:name=".Menu.AboutAppActivity" />
-        <activity android:name=".DragNDropExpandableListView.DragNDropListActivity" />
+
+        <receiver android:name=".Tracker.ReceiveNotifyAnswer">
+            <intent-filter>
+                <action android:name="onNotifyButton" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

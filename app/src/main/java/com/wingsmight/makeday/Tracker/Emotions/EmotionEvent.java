@@ -6,9 +6,9 @@ public class EmotionEvent extends TimeInterval
 {
     String emotion;
 
-    public EmotionEvent(int day, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String emotion)
+    public EmotionEvent(int day, int dayOfWeel, int month, int year, int hoursBefore, int minutesBefore, int hoursAfter, int minutesAfter, String emotion)
     {
-        super(day, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter);
+        super(day, dayOfWeel, month, year, hoursBefore, minutesBefore, hoursAfter, minutesAfter);
 
         this.emotion = emotion;
     }

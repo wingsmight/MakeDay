@@ -8,9 +8,10 @@ public class TimeTrackingDay<TI>
     private int day, dayOfWeek, month, year;
     private ArrayList<TI> timeIntervals;
 
-    public TimeTrackingDay(int day, int dayOfWeek, int year, ArrayList<TI> timeIntervals, int month)
+    public TimeTrackingDay(int day, int dayOfWeek, int month, int year, ArrayList<TI> timeIntervals)
     {
         this.day = day;
+        this.dayOfWeek = dayOfWeek;
         this.month = month;
         this.year = year;
         this.timeIntervals = timeIntervals;
@@ -18,7 +19,7 @@ public class TimeTrackingDay<TI>
 
     public void AddTimeInterval(TI timeInterval)
     {
-        timeIntervals.add(timeInterval);
+        timeIntervals.add(0, timeInterval);
     }
 
     public ArrayList<TI> getTimeIntervals()
@@ -33,7 +34,7 @@ public class TimeTrackingDay<TI>
 
     public String getDayOfWeek()
     {
-        switch (day) {
+        switch (dayOfWeek + 1) {
             case Calendar.MONDAY:
             {
                 return "Пнд";
@@ -94,7 +95,7 @@ public class TimeTrackingDay<TI>
 
     public String getMonth()
     {
-        switch (month)
+        switch (month + 1)
         {
             case 1:
             {

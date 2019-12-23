@@ -28,7 +28,7 @@ public class RowDayModel
 
     public String getDayOfWeek()
     {
-        switch (day) {
+        switch (dayOfWeek + 1) {
             case Calendar.MONDAY:
             {
                 return "Пнд";
