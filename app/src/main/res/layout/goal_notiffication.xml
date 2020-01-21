@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ЦЕЛИ"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:padding="3dp"
+        android:textColor="@color/grey"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выполнено ли сегодня:"
+        android:gravity="center"
+        android:textSize="17sp"
+        android:padding="6dp"
+        android:textColor="@color/colorAccent"
+        />
+
+    <TextView
+        android:id="@+id/goalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Позвонить бабушке"
+        android:padding="6dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:gravity="center"
+        android:textSize="17sp"
+        android:textColor="@color/colorAccent"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/colorAccent"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/yesAnswer"
+            android:layout_width="0"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:text="Да"
+            />
+
+        <Button
+            android:id="@+id/noAnswer"
+            android:layout_width="0"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:text="нет"
+            />
+
+        <Button
+            android:id="@+id/almostAnswer"
+            android:layout_width="0"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:text="Частично"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="15dp"
+        >
+
+        <TextView
+            android:id="@+id/skipButton"
+            android:layout_width="0"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/Skip"
+
+            />
+
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="0"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:text="Готово"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

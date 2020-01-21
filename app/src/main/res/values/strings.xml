@@ -26,4 +26,5 @@
     <string name="AboutApp">О приложении</string>
     <string name="sendWhatIDo">Отправить</string>
     <string name="NotificationSettingsText">Уведомления</string>
+    <string name="Skip"><u>Пропустить</u></string>
 </resources>
