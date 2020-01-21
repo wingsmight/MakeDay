@@ -81,6 +81,17 @@ public class MenuFragment extends Fragment implements GoogleAuthListener
                 startActivity(intent);
             }
         });
+
+        TextView notificationSettingsText = view.findViewById(R.id.notificationSettingsText);
+        notificationSettingsText.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(getContext(), NotificationSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

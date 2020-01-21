@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SaveLoad
 {
-    private static final String defaultSavingPath = "defaultSavingPath";
+    public static final String defaultSavingPath = "defaultSavingPath";
 
     private static ArrayList<RowDayModel> list0;
     private static ArrayList<TimeTrackingDay<Event>> list1;
@@ -82,7 +82,7 @@ public class SaveLoad
     {
         Gson gson = new Gson();
 
-        String json = loadString("TabArray", tabName.toString());
+        String json = loadString("TabArray", tabName.toString(), "");
 
         switch (tabName)
         {
@@ -203,7 +203,7 @@ public class SaveLoad
         saveBoolean(defaultSavingPath, "isFirstLoad", true);
     }
 
-    private static void saveString(String fileName, String key, String value)
+    public static void saveString(String fileName, String key, String value)
     {
         SharedPreferences sharedPreferences = getActualContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
         SharedPreferences.Editor editorSave = sharedPreferences.edit();
@@ -212,13 +212,13 @@ public class SaveLoad
         editorSave.apply();
     }
 
-    private static String loadString(String fileName, String key)
+    public static String loadString(String fileName, String key, String defaultValue)
     {
         SharedPreferences sharedPreferences = getActualContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(key, "");
+        return sharedPreferences.getString(key, defaultValue);
     }
 
-    private static void saveBoolean(String fileName, String key, boolean value)
+    public static void saveBoolean(String fileName, String key, boolean value)
     {
         SharedPreferences sharedPreferences = getActualContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
         SharedPreferences.Editor editorSave = sharedPreferences.edit();
@@ -227,7 +227,7 @@ public class SaveLoad
         editorSave.apply();
     }
 
-    private static boolean loadBoolean(String fileName, String key)
+    public static boolean loadBoolean(String fileName, String key)
     {
         SharedPreferences sharedPreferences = getActualContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(key, false);

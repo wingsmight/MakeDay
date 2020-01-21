@@ -64,6 +64,16 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/notificationSettingsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/NotificationSettingsText"
+        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:padding="15dp"
+        />
+
+    <TextView
         android:id="@+id/aboutAppText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

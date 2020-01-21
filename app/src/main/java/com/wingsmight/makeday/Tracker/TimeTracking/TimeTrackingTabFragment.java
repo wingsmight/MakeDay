@@ -1,6 +1,7 @@
 package com.wingsmight.makeday.Tracker.TimeTracking;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -19,12 +20,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,15 +53,11 @@ import java.util.List;
 
 public class TimeTrackingTabFragment extends Fragment
 {
-    private static final String ACTION_SNOOZE = "ACTION_SNOOZE";
     public static int requestCode = 1111;
     private TabName tabName = TabName.TIME_TRACKING;
     private RecyclerView recyclerView;
     private static ArrayList<TimeTrackingDay> timeTrackingDays = new ArrayList<>();
     private static TimeTrackingTabAdapter timeTrackingTabAdapter;
-
-    private static final int NOTIFY_ID = 101;
-    private static String CHANNEL_ID = "what did you do channel";
 
 
     @Override
@@ -89,6 +92,9 @@ public class TimeTrackingTabFragment extends Fragment
 
     private TextView startTrackingTime;
     private TextView finishTrackingTime;
+    private int startHour, startMinutes;
+    private int finishHour, finishMinutes;
+
     private void setLaunchSettings(View view)
     {
         //Show popup
@@ -98,19 +104,33 @@ public class TimeTrackingTabFragment extends Fragment
         final AlertDialog popupDialog = builder.create();
         popupDialog.show();
 
-        Button sendButton = dialogView.findViewById(R.id.dialog_like_bt);
-        sendButton.setOnClickListener(new View.OnClickListener()
+        Button launchButton = dialogView.findViewById(R.id.launchButton);
+        launchButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                launch();
-                Toast.makeText(getContext(), "Уведомления настроены", Toast.LENGTH_SHORT).show();
-                popupDialog.dismiss();
+                if((startHour >= finishHour) && ((startHour != finishHour) || (startMinutes >= finishMinutes)))
+                {
+                    Toast.makeText(getContext(), "Конец учета должен быть позже начала!", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    pullNotification();
+                    Toast.makeText(getContext(), "Уведомления настроены", Toast.LENGTH_SHORT).show();
+                    popupDialog.dismiss();
+                }
             }
         });
 
         startTrackingTime = dialogView.findViewById(R.id.startTrackingTime);
+
+        String startTime = startTrackingTime.getText().toString();
+        startHour = Integer.valueOf(startTime.substring(0, startTime.indexOf(':')));
+        startMinutes = Integer.valueOf(startTime.substring(startTime.indexOf(':') + 1));
+
+        String startTrackingTimeString = SaveLoad.loadString(SaveLoad.defaultSavingPath, "startTrackingTime", "8:00");
+        startTrackingTime.setText(startTrackingTimeString);
         startTrackingTime.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -123,7 +143,12 @@ public class TimeTrackingTabFragment extends Fragment
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                     {
-                        startTrackingTime.setText(hourOfDay + ":" + toHourFormat(minute));
+                        startHour = hourOfDay;
+                        startMinutes = minute;
+
+                        String startTrackingTimeString = hourOfDay + ":" + toHourFormat(minute);
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "startTrackingTime", startTrackingTimeString);
+                        startTrackingTime.setText(startTrackingTimeString);
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "time picker");
@@ -131,6 +156,13 @@ public class TimeTrackingTabFragment extends Fragment
         });
 
         finishTrackingTime = dialogView.findViewById(R.id.finishTrackingTime);
+
+        String finishTime = finishTrackingTime.getText().toString();
+        finishHour = Integer.valueOf(finishTime.substring(0, finishTime.indexOf(':')));
+        finishMinutes = Integer.valueOf(finishTime.substring(finishTime.indexOf(':') + 1));
+
+        String FinishTrackingTimeString = SaveLoad.loadString(SaveLoad.defaultSavingPath, "finishTrackingTime", "22:00");
+        finishTrackingTime.setText(FinishTrackingTimeString);
         finishTrackingTime.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -143,7 +175,12 @@ public class TimeTrackingTabFragment extends Fragment
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
                     {
-                        finishTrackingTime.setText(hourOfDay + ":" + toHourFormat(minute));
+                        finishHour = hourOfDay;
+                        finishMinutes = minute;
+
+                        String FinishTrackingTimeString = hourOfDay + ":" + toHourFormat(minute);
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "finishTrackingTime", FinishTrackingTimeString);
+                        finishTrackingTime.setText(FinishTrackingTimeString);
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "time picker");
@@ -183,80 +220,159 @@ public class TimeTrackingTabFragment extends Fragment
         intervalTrackingTime = interval;
     }
 
-    private void launch()
+    AlertDialog alert;
+    Handler notifyHandler;
+    public void pullNotification()
     {
-        Context context = getContext();
+        Date startDate = Calendar.getInstance().getTime();
+        startDate.setHours(startHour);
+        startDate.setMinutes(startMinutes);
 
-        RemoteInput remoteInput = new RemoteInput.Builder("key_text_reply")
-                .setLabel("Введите другой ответ...")
-                .build();
+        Date finishDate = Calendar.getInstance().getTime();
+        finishDate.setHours(finishHour);
+        finishDate.setMinutes(finishMinutes);
 
-        Intent replyIntent;
-        PendingIntent replyPendingIntent = null;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        int timeDiff = intervalTrackingTime.getMinute();
+        long millisecondsDiff = timeDiff * 60000;
+
+        Date beforeDate = Calendar.getInstance().getTime();
+        int beforeHour = beforeDate.getHours();
+        int beforeMinutes = beforeDate.getMinutes();;
+
+        Date afterDate = new Date(Calendar.getInstance().getTimeInMillis() + millisecondsDiff);
+        int afterHour = afterDate.getHours();
+        int afterMinutes = afterDate.getMinutes();
+
+        long currentMillisTime = Calendar.getInstance().getTimeInMillis();
+        long finishMillisTime = finishDate.getTime();
+
+        long millisTimeToFinish = finishMillisTime - currentMillisTime;
+        if (millisTimeToFinish < 1000)
         {
-            replyIntent = new Intent("onNotifyButton");
-            replyPendingIntent = PendingIntent.getBroadcast(context,0, replyIntent, 0);
+            long nextDayStartTime = startDate.getTime() + 86400000;
+            millisecondsDiff = nextDayStartTime - Calendar.getInstance().getTimeInMillis();//Notify at next day
         }
-        else
+        else if(millisTimeToFinish <= millisecondsDiff)
         {
-            replyIntent = new Intent("onNotifyButton");
-            replyPendingIntent = PendingIntent.getBroadcast(context,0, replyIntent, 0);
+            if(millisTimeToFinish >= millisecondsDiff / 2)
+            {
+                millisecondsDiff = millisTimeToFinish;
+            }
+            else
+            {
+                long nextDayStartTime = startDate.getTime() + 86400000;
+                millisecondsDiff = nextDayStartTime - Calendar.getInstance().getTimeInMillis();//Notify at next day
+            }
         }
 
-        NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_send_black_24dp,
-                "Ответить",
-                replyPendingIntent
-        ).addRemoteInput(remoteInput).build();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        RemoteViews collapsedView = new RemoteViews(getContext().getPackageName(), R.layout.notification_collapsed);
-        RemoteViews expandedView = new RemoteViews(getContext().getPackageName(), R.layout.notification_expanded);
+        View dialogView = createDialogView(beforeHour, beforeMinutes, afterHour, afterMinutes);
 
-        expandedView.setOnClickPendingIntent(R.id.notifyButton1, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick1));
-        expandedView.setOnClickPendingIntent(R.id.notifyButton2, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick2));
-        expandedView.setOnClickPendingIntent(R.id.notifyButton3, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick3));
-        expandedView.setOnClickPendingIntent(R.id.notifyButton4, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick4));
-        expandedView.setOnClickPendingIntent(R.id.notifyButton5, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick5));
-        expandedView.setOnClickPendingIntent(R.id.notifyButton6, getPendingSelfIntent(context, ReceiveNotifyAnswer.MyOnClick6));
+        builder.setView(dialogView);
+        alert = builder.create();
+        alert.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alert.getWindow().setGravity(Gravity.TOP);
 
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Window window = alert.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+
+
+        notifyHandler.removeCallbacksAndMessages(null);
+        notifyHandler = new Handler();
+        notifyHandler.postDelayed(new Runnable() {
+            public void run() {
+                alert.show();
+            }
+        }, millisecondsDiff);
+    }
+
+    private View createDialogView(int beforeHours, int beforeMinutes, int afterHours, int afterMinutes)
+    {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View dialogView = inflater.inflate(R.layout.notification_expanded, null);
+        ((TextView)(dialogView.findViewById(R.id.WhatWasYouDoing))).setText("Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
+                + " до " + afterHours + ":" + minutesToFullFormat(Integer.toString(afterMinutes)) + "?");
+
+        Button[] notifyButtons = new Button[6];
+        notifyButtons[0] = dialogView.findViewById(R.id.notifyButton1);
+        notifyButtons[1] = dialogView.findViewById(R.id.notifyButton2);
+        notifyButtons[2] = dialogView.findViewById(R.id.notifyButton3);
+        notifyButtons[3] = dialogView.findViewById(R.id.notifyButton4);
+        notifyButtons[4] = dialogView.findViewById(R.id.notifyButton5);
+        notifyButtons[5] = dialogView.findViewById(R.id.notifyButton6);
+
+        for (Button notifyButton : notifyButtons)
+        {
+            notifyButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+
+                    clickOnEventButton((Button)v);
+                }
+            });
+        }
+
+        ImageButton sendButton = dialogView.findViewById(R.id.sendEventButton);
+        final EditText sendEventEditText = dialogView.findViewById(R.id.sendEventEditText);
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                clickOnEventSendButton(sendEventEditText.getText().toString());
+            }
+        });
+
+        return dialogView;
+    }
+
+    public void clickOnEventButton(Button buttonView)
+    {
+        alert.dismiss();
+
+        String eventText = buttonView.getText().toString();
 
         Date date = Calendar.getInstance().getTime();
 
-        int year = date.getYear() + 1900;
-        int month = date.getMonth();
-        int day = date.getDate();
-        int dayOfWeek = date.getDay();
-        int hours = date.getHours();
-        int minutes = date.getMinutes();
-
-        int timeDiff = intervalTrackingTime.getMinute();
+        int timeDiff = TimeTrackingTabFragment.intervalTrackingTime.getMinute();
         long millisecondsDiff = timeDiff * 60000;
         long beforeDateTime = date.getTime() - millisecondsDiff;
         Date beforeDate = new Date(beforeDateTime);
         int beforeHours = beforeDate.getHours();
         int beforeMinutes = beforeDate.getMinutes();
 
-        expandedView.setTextViewText(R.id.WhatWasYouDoing, "Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
-                + " до " + hours + ":" + minutesToFullFormat(Integer.toString(minutes)) + "?");
-        collapsedView.setTextViewText(R.id.WhatWasYouDoing, "Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
-                + " до " + hours + ":" + minutesToFullFormat(Integer.toString(minutes)) + "?");
+        TimeTrackingTabFragment.addEvent(new Event(date, beforeHours, beforeMinutes, eventText));
 
-
-        Notification notification = new NotificationCompat.Builder(context, "ChannelID")
-                .setSmallIcon(R.drawable.app_icon)
-                .setCustomBigContentView(expandedView)
-                .setCustomContentView(collapsedView)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                .addAction(replyAction)
-                .setAutoCancel(true)
-                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                .build();
-
-        notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(1, notification);
+        pullNotification();
     }
+
+    public void clickOnEventSendButton(String eventText)
+    {
+        alert.dismiss();
+
+        Date date = Calendar.getInstance().getTime();
+
+        int timeDiff = TimeTrackingTabFragment.intervalTrackingTime.getMinute();
+        long millisecondsDiff = timeDiff * 60000;
+        long beforeDateTime = date.getTime() - millisecondsDiff;
+        Date beforeDate = new Date(beforeDateTime);
+        int beforeHours = beforeDate.getHours();
+        int beforeMinutes = beforeDate.getMinutes();
+
+        TimeTrackingTabFragment.addEvent(new Event(date, beforeHours, beforeMinutes, eventText));
+
+        pullNotification();
+    }
+
 
     private String minutesToFullFormat(String shortMinutes)
     {
@@ -290,7 +406,7 @@ public class TimeTrackingTabFragment extends Fragment
         int size = timeTrackingDays.size();
         if(size != 0)
         {
-            if(event.getDay() >= timeTrackingDays.get(0).getDay())
+            if(event.getDay() > timeTrackingDays.get(0).getDay())
             {
                 ArrayList<Event> newEventsArray = new ArrayList();
                 newEventsArray.add(event);

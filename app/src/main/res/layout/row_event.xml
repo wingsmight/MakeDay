@@ -22,7 +22,6 @@
         android:textSize="16sp"
         android:paddingLeft="10dp"
         android:ellipsize="end"
-        android:maxLines="1"
         android:text="Дорога на работу"
         />
 

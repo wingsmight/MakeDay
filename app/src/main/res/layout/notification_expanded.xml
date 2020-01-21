@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="156dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/WhatWasYouDoing"
@@ -19,38 +19,96 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:orientation="horizontal"
         >
         <Button
             android:id="@+id/notifyButton1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
             android:text="Читал"
-            android:singleLine="true"
             />
         <Button
             android:id="@+id/notifyButton2"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
             android:text="Работал"
-            android:singleLine="true"
             />
         <Button
             android:id="@+id/notifyButton3"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
             android:text="Отдыхал"
-            android:singleLine="true"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="2dp"
+        >
+
+        <Button
+            android:id="@+id/notifyButton4"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="Играл на пк"
+            />
+        <Button
+            android:id="@+id/notifyButton5"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="Учился"
+            />
+        <Button
+            android:id="@+id/notifyButton6"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:minHeight="75dp"
+            android:maxLines="3"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="Спорт"
             />
 
     </LinearLayout>
@@ -59,41 +117,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="2dp"
-        android:weightSum="3"
         >
-        <Button
-            android:id="@+id/notifyButton4"
+
+        <EditText
+            android:id="@+id/sendEventEditText"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="Играл на пк"
             android:singleLine="true"
+            android:hint="Ваш ответ"
             />
-        <Button
-            android:id="@+id/notifyButton5"
-            android:layout_width="0dp"
+
+        <ImageButton
+            android:id="@+id/sendEventButton"
+            android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="Учился"
-            android:singleLine="true"
-            />
-        <Button
-            android:id="@+id/notifyButton6"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:text="Спорт"
-            android:singleLine="true"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_send_black_24dp"
+            android:scaleType="fitCenter"
+            android:background="@color/transparent"
             />
 
     </LinearLayout>
+
 
 
 </LinearLayout>
