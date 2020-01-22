@@ -1,11 +1,19 @@
 package com.wingsmight.makeday.Menu;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.wingsmight.makeday.GoalNotification;
+import com.wingsmight.makeday.Growth.Goals.Goal;
+import com.wingsmight.makeday.Growth.Goals.GoalsTabFragment;
+import com.wingsmight.makeday.Growth.GrowthFragment;
+import com.wingsmight.makeday.Growth.Skills.SkillsTabFragment;
+import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TimePickerFragment;
@@ -69,6 +77,8 @@ public class NotificationSettingsActivity extends AppCompatActivity
                         eveningTime.setText(hourOfDay + ":" + toHourFormat(minute));
 
                         SaveLoad.saveString(SaveLoad.defaultSavingPath, "eveningTime", eveningTime.getText().toString());
+
+                        GoalNotification.setEveningSkillNotify(eveningTime.getContext());
                     }
                 });
                 timePickerDialog.show(getSupportFragmentManager(), "time picker");

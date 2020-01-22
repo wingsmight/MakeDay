@@ -1,5 +1,6 @@
 package com.wingsmight.makeday.Growth.Goals;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -31,12 +32,15 @@ import com.wingsmight.makeday.DragNDropExpandableListView.DragListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.DragNDropGoalListView;
 import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
+import com.wingsmight.makeday.GoalNotification;
 import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class GoalsTabFragment extends Fragment
 {
@@ -103,6 +107,8 @@ public class GoalsTabFragment extends Fragment
         nonCheckedListView.setVisibility(View.GONE);
         nonCheckedGoalsTabAdapter.addGoalsTabAdapter(goalsTabAdapter);
         nonCheckedListView.setAdapter(nonCheckedGoalsTabAdapter);
+
+        GoalNotification.setEveningSkillNotify(getContext());
     }
 
     @Override

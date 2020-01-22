@@ -283,9 +283,8 @@ public class TimeTrackingTabFragment extends Fragment
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
 
-
-        notifyHandler.removeCallbacksAndMessages(null);
         notifyHandler = new Handler();
+        notifyHandler.removeCallbacksAndMessages(null);
         notifyHandler.postDelayed(new Runnable() {
             public void run() {
                 alert.show();

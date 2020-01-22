@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
+import com.wingsmight.makeday.Growth.Goals.GoalsTabFragment;
+import com.wingsmight.makeday.Growth.Skills.SkillsTabFragment;
 import com.wingsmight.makeday.R;
 
 import androidx.annotation.NonNull;
