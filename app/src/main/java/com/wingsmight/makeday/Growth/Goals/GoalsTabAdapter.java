@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class GoalsTabAdapter extends BaseAdapter implements RemoveListener, DropListener
 {
-    private ArrayList<Goal> goals;
+    public static ArrayList<Goal> goals;
     private NonCheckedGoalsTabAdapter nonCheckedGoalsTabAdapter;
     private Fragment fragment;
     private Context context;

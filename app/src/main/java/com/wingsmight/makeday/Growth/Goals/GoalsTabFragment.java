@@ -107,8 +107,6 @@ public class GoalsTabFragment extends Fragment
         nonCheckedListView.setVisibility(View.GONE);
         nonCheckedGoalsTabAdapter.addGoalsTabAdapter(goalsTabAdapter);
         nonCheckedListView.setAdapter(nonCheckedGoalsTabAdapter);
-
-        GoalNotification.setEveningSkillNotify(getContext());
     }
 
     @Override

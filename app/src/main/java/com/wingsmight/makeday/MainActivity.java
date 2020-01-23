@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
 
         SetupBottomNavigationView();
+
+        GoalNotification.setEveningSkillNotify(this);
     }
 
     @Override

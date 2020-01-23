@@ -16,6 +16,8 @@ import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.Tracker.RowDayModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MyDaysFragment extends Fragment
 {
@@ -61,5 +63,80 @@ public class MyDaysFragment extends Fragment
     public void onPause() {
         super.onPause();
         backgroundSave();
+    }
+
+    public void addUndoneDealToToday(String undoneDeal)
+    {
+        Date todayDate = Calendar.getInstance().getTime();
+
+        if(days.size() != 0)
+        {
+            if(!days.get(0).equalsToDate(todayDate))
+            {
+                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                        null, null, null));
+            }
+
+            days.get(0).addUndoneDeals(undoneDeal);
+        }
+        else
+        {
+            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                    null, null, null));
+
+            days.get(0).addUndoneDeals(undoneDeal);
+        }
+
+        myDaysAdapter.notifyDataSetChanged();
+    }
+
+    public void addDoneDealToToday(String doneDeal)
+    {
+        Date todayDate = Calendar.getInstance().getTime();
+
+        if(days.size() != 0)
+        {
+            if(!days.get(0).equalsToDate(todayDate))
+            {
+                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                        null, null, null));
+            }
+
+            days.get(0).addDoneDeals(doneDeal);
+        }
+        else
+        {
+            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                    null, null, null));
+
+            days.get(0).addDoneDeals(doneDeal);
+        }
+
+        myDaysAdapter.notifyDataSetChanged();
+    }
+
+    public void addAlmostDealToToday(String almostDeal)
+    {
+        Date todayDate = Calendar.getInstance().getTime();
+
+        if(days.size() != 0)
+        {
+            if(!days.get(0).equalsToDate(todayDate))
+            {
+                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                        null, null, null));
+            }
+
+            days.get(0).addAlmostDeals(almostDeal);
+        }
+        else
+        {
+            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                    null, null, null));
+
+            days.get(0).addAlmostDeals(almostDeal);
+        }
+
+        myDaysAdapter.notifyDataSetChanged();
     }
 }

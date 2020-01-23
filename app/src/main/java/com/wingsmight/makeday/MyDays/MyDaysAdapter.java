@@ -12,6 +12,8 @@ import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.Tracker.RowDayModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysViewHolder>
 {
@@ -39,9 +41,10 @@ public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysView
     {
         final RowDayModel rowDayModel = rowDayModelArrayList.get(i);
 
-        viewHolder.date.setText(rowDayModel.getDayOfWeek() + ", " + rowDayModel.getDay() + " " + rowDayModel.getMonth());
+        viewHolder.date.setText(rowDayModel.getDayOfWeek() + ", " + rowDayModel.getDay() + " " + rowDayModel.getMonthName());
         viewHolder.doList.setText(rowDayModel.getDoneString());
         viewHolder.undoList.setText(rowDayModel.getUndoneString());
+        viewHolder.almostDoList.setText(rowDayModel.getAlmostString());
     }
 
     @Override
@@ -58,7 +61,7 @@ public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysView
 
     public class MyDaysViewHolder extends  RecyclerView.ViewHolder
     {
-        TextView date, doList, undoList;
+        TextView date, doList, undoList, almostDoList;
 
         public MyDaysViewHolder(@NonNull View itemView)
         {
@@ -67,6 +70,7 @@ public class MyDaysAdapter extends RecyclerView.Adapter<MyDaysAdapter.MyDaysView
             date = itemView.findViewById(R.id.date);
             doList = itemView.findViewById(R.id.doList);
             undoList = itemView.findViewById(R.id.undoList);
+            almostDoList = itemView.findViewById(R.id.almostDoList);
         }
     }
 }

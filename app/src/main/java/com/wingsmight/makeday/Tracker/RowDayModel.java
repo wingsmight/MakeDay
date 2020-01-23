@@ -3,15 +3,20 @@ package com.wingsmight.makeday.Tracker;
 import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class RowDayModel
 {
-    int day, dayOfWeek, year;
-    String month;
-    String[] doneDeals, undoneDeals;
+    int day, dayOfWeek, month, year;
+    String monthName;
+    ArrayList<String> doneDeals = new ArrayList<>();
+    ArrayList<String> undoneDeals = new ArrayList<>();
+    ArrayList<String> almostDeals = new ArrayList<>();
 
-    public RowDayModel(int day, int dayOfWeek, int year, String[] doneDeals, String[] undoneDeals, String month)
+    public RowDayModel(int day, int dayOfWeek, int month, int year, ArrayList<String> undoneDeals, ArrayList<String> doneDeals, ArrayList<String> almostDeals)
     {
         this.day = day;
         this.dayOfWeek = dayOfWeek;
@@ -19,6 +24,18 @@ public class RowDayModel
         this.month = month;
         this.doneDeals = doneDeals;
         this.undoneDeals = undoneDeals;
+        this.almostDeals = almostDeals;
+        this.monthName = monthToNamingMonth(month);
+    }
+
+    private String monthToNamingMonth(int monthNumber)
+    {
+        Calendar cal=Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        cal.set(Calendar.MONTH, monthNumber);
+        String monthName = month_date.format(cal.getTime());
+
+        return monthName;
     }
 
     public int getDay()
@@ -82,57 +99,130 @@ public class RowDayModel
         this.year = year;
     }
 
-    public String getMonth()
+    public int getMonth()
     {
         return month;
     }
 
-    public void setMonth(String month)
+    public void setMonth(int month)
     {
         this.month = month;
     }
 
+    public String getMonthName()
+    {
+        return monthName;
+    }
+
+    public void setMonthName(String monthName)
+    {
+        this.monthName = monthName;
+    }
+
     public String getDoneString()
     {
+        if(doneDeals == null) return "";
+
         String doneString = MainActivity.GetContext().getResources().getString(R.string.Done) + ":";
-        for (int i = 0; i < doneDeals.length - 1; i++)
+        for (int i = 0; i < doneDeals.size() - 1; i++)
         {
-            doneString += " " + doneDeals[i] + ",";
+            doneString += " " + doneDeals.get(i) + ",";
         }
-        doneString += " " + doneDeals[doneDeals.length - 1];
+        doneString += " " + doneDeals.get(doneDeals.size() - 1);
 
         return doneString;
     }
 
     public String getUndoneString()
     {
+        if(undoneDeals == null) return "";
+
         String undoneString = MainActivity.GetContext().getResources().getString(R.string.Undone) + ":";
-        for (int i = 0; i < undoneDeals.length - 1; i++)
+        for (int i = 0; i < undoneDeals.size() - 1; i++)
         {
-            undoneString += " " + undoneDeals[i] + ",";
+            undoneString += " " + undoneDeals.get(i) + ",";
         }
-        undoneString += " " + undoneDeals[undoneDeals.length - 1];
+        undoneString += " " + undoneDeals.get(undoneDeals.size() - 1);
 
         return undoneString;
     }
 
-    public String[] getDoneDeals()
+    public String getAlmostString()
+    {
+        if(almostDeals == null) return "";
+
+        String almmostString = MainActivity.GetContext().getResources().getString(R.string.Almost) + ":";
+        for (int i = 0; i < almostDeals.size() - 1; i++)
+        {
+            almmostString += " " + almostDeals.get(i) + ",";
+        }
+        almmostString += " " + almostDeals.get(almostDeals.size() - 1);
+
+        return almmostString;
+    }
+
+    public ArrayList<String> getDoneDeals()
     {
         return doneDeals;
     }
 
-    public void setDoneDeals(String[] doneDeals)
+    public void setDoneDeals(ArrayList<String> doneDeals)
     {
         this.doneDeals = doneDeals;
     }
 
-    public String[] getUndoneDeals()
+    public ArrayList<String> getUndoneDeals()
     {
         return undoneDeals;
     }
 
-    public void setUndoneDeals(String[] undoneDeals)
+    public void setUndoneDeals(ArrayList<String> undoneDeals)
     {
         this.undoneDeals = undoneDeals;
+    }
+
+    public ArrayList<String> getAlmostDeals()
+    {
+        return almostDeals;
+    }
+
+    public void setAlmostDeals(ArrayList<String> almostDeals)
+    {
+        this.almostDeals = almostDeals;
+    }
+
+    public void addUndoneDeals(String undoneDeal)
+    {
+        if(undoneDeals == null)
+        {
+            undoneDeals = new ArrayList<String>();
+        }
+
+        undoneDeals.add(undoneDeal);
+    }
+
+    public void addDoneDeals(String doneDeal)
+    {
+        if(doneDeals == null)
+        {
+            doneDeals = new ArrayList<String>();
+        }
+
+        doneDeals.add(doneDeal);
+    }
+
+    public void addAlmostDeals(String almostDeal)
+    {
+        if(almostDeals == null)
+        {
+            almostDeals = new ArrayList<String>();
+        }
+
+        almostDeals.add(almostDeal);
+    }
+
+    public boolean equalsToDate(Date date)
+    {
+        return ((date.getYear() + 1900) == year && date.getMonth() == month && date.getDate() == day);
     }
 }
