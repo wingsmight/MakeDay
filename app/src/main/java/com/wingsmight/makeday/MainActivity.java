@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +42,14 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
 
         SetupBottomNavigationView();
+
+
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
 
         GoalNotification.setEveningSkillNotify(this);
     }

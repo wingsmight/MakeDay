@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,18 +35,28 @@ public class GoalNotification
     private static Handler notifyHandler;
     private static String goalLabel;
 
+    private static MyDaysFragment myDaysFragment;
+
     public static void setEveningSkillNotify(Context context)
     {
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        MyDaysFragment myDaysFragmentTest = ((MyDaysFragment)(fragmentManager.findFragmentByTag("1")));
+        if(myDaysFragmentTest != null)
+        {
+            myDaysFragment = myDaysFragmentTest;
+        }
+
         //show notification at evening
         long currentMilliseconds = Calendar.getInstance().getTimeInMillis();
-        Date eveningDate = Calendar.getInstance().getTime();
 
+        Date eveningDate = Calendar.getInstance().getTime();
         String eveningTime = SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime", "22:00");
         int eveningHour = Integer.valueOf(eveningTime.substring(0, eveningTime.indexOf(':')));
         int eveningMinutes = Integer.valueOf(eveningTime.substring(eveningTime.indexOf(':') + 1));
 
         eveningDate.setHours(eveningHour);
         eveningDate.setMinutes(eveningMinutes);
+        eveningDate.setSeconds(0);
 
         long eveningMilliseconds = eveningDate.getTime();
 
@@ -135,9 +146,6 @@ public class GoalNotification
             @Override
             public void onClick(View v)
             {
-                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                MyDaysFragment myDaysFragment = ((MyDaysFragment)(fragmentManager.findFragmentByTag("1")));
-
                 myDaysFragment.addDoneDealToToday(goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
@@ -159,9 +167,6 @@ public class GoalNotification
             @Override
             public void onClick(View v)
             {
-                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                MyDaysFragment myDaysFragment = ((MyDaysFragment)(fragmentManager.findFragmentByTag("1")));
-
                 myDaysFragment.addUndoneDealToToday(goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
@@ -183,9 +188,6 @@ public class GoalNotification
             @Override
             public void onClick(View v)
             {
-                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-                MyDaysFragment myDaysFragment = ((MyDaysFragment)(fragmentManager.findFragmentByTag("1")));
-
                 myDaysFragment.addAlmostDealToToday(goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
@@ -227,8 +229,6 @@ public class GoalNotification
             @Override
             public void onClick(View v)
             {
-                goalIndex = 0;
-
                 alertDialog.dismiss();
             }
         });

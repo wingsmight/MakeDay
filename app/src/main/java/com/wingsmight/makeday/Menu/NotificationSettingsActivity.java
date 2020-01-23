@@ -3,6 +3,7 @@ package com.wingsmight.makeday.Menu;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -61,6 +62,7 @@ public class NotificationSettingsActivity extends AppCompatActivity
             }
         });
 
+        final Context context = this;
         final TextView eveningTime = findViewById(R.id.eveningTime);
         eveningTime.setText(SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime", "22:00"));
         eveningTime.setOnClickListener(new View.OnClickListener()
@@ -78,7 +80,7 @@ public class NotificationSettingsActivity extends AppCompatActivity
 
                         SaveLoad.saveString(SaveLoad.defaultSavingPath, "eveningTime", eveningTime.getText().toString());
 
-                        GoalNotification.setEveningSkillNotify(eveningTime.getContext());
+                        GoalNotification.setEveningSkillNotify(context);
                     }
                 });
                 timePickerDialog.show(getSupportFragmentManager(), "time picker");

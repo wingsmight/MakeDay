@@ -1,9 +1,13 @@
 package com.wingsmight.makeday;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,6 +28,8 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
     private SignInButton signInButton;
     private Intent intent;
     private GoogleAuthHelper googleSignInHelper;
+
+    public int SYSTEM_ALERT_WINDOW_PERMISSION = 33;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +101,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
             }
         };
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            askPermission();
+        }
+
         handler = new Handler();
         handler.postDelayed(runnable, 800);
     }
@@ -153,6 +163,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleAuthListe
     {
         startActivity(intent);
         finish();
+    }
+
+    @TargetApi(23)
+    public void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
     }
 }
 
