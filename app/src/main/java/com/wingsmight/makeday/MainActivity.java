@@ -1,6 +1,9 @@
 package com.wingsmight.makeday;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -51,7 +54,20 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPostCreate(savedInstanceState);
 
-        GoalNotification.setEveningSkillNotify(this);
+        //GoalNotification.setEveningSkillNotify(this);
+        startLoopingGoalNotify();
+    }
+
+    private void startLoopingGoalNotify()
+    {
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, GoalNotification.class);
+        //intent.putExtra(ONE_TIME, Boolean.FALSE);//Задаем параметр интента
+        int requestCode = 1011;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,0);
+
+        //Устанавливаем интервал срабатывания в 1 минуту
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),1 * 10 * 1000, pendingIntent);
     }
 
     @Override
