@@ -48,7 +48,7 @@ public class MyDaysFragment extends Fragment
         recyclerView.setAdapter(myDaysAdapter);
     }
 
-    private void backgroundSave(){
+    public void backgroundSave(){
         Thread backgroundThread = new Thread() {
             @Override
             public void run()
@@ -69,11 +69,16 @@ public class MyDaysFragment extends Fragment
     {
         Date todayDate = Calendar.getInstance().getTime();
 
+        addUndoneDealToDay(todayDate, undoneDeal);
+    }
+
+    public void addUndoneDealToDay(Date day, String undoneDeal)
+    {
         if(days.size() != 0)
         {
-            if(!days.get(0).equalsToDate(todayDate))
+            if(!days.get(0).equalsToDate(day))
             {
-                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                days.add(0, new RowDayModel(day.getDate(), day.getDay(), day.getMonth(), day.getYear() + 1900,
                         null, null, null));
             }
 
@@ -81,10 +86,33 @@ public class MyDaysFragment extends Fragment
         }
         else
         {
-            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+            days.add(0, new RowDayModel(day.getDate(), day.getDay(), day.getMonth(), day.getYear() + 1900,
                     null, null, null));
 
             days.get(0).addUndoneDeals(undoneDeal);
+        }
+
+        myDaysAdapter.notifyDataSetChanged();
+    }
+
+    public void addDoneDealToDay(Date day, String doneDeal)
+    {
+        if(days.size() != 0)
+        {
+            if(!days.get(0).equalsToDate(day))
+            {
+                days.add(0, new RowDayModel(day.getDate(), day.getDay(),day.getMonth(), day.getYear() + 1900,
+                        null, null, null));
+            }
+
+            days.get(0).addDoneDeals(doneDeal);
+        }
+        else
+        {
+            days.add(0, new RowDayModel(day.getDate(), day.getDay(), day.getMonth(), day.getYear() + 1900,
+                    null, null, null));
+
+            days.get(0).addDoneDeals(doneDeal);
         }
 
         myDaysAdapter.notifyDataSetChanged();
@@ -94,36 +122,23 @@ public class MyDaysFragment extends Fragment
     {
         Date todayDate = Calendar.getInstance().getTime();
 
-        if(days.size() != 0)
-        {
-            if(!days.get(0).equalsToDate(todayDate))
-            {
-                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
-                        null, null, null));
-            }
-
-            days.get(0).addDoneDeals(doneDeal);
-        }
-        else
-        {
-            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
-                    null, null, null));
-
-            days.get(0).addDoneDeals(doneDeal);
-        }
-
-        myDaysAdapter.notifyDataSetChanged();
+        addDoneDealToDay(todayDate, doneDeal);
     }
 
     public void addAlmostDealToToday(String almostDeal)
     {
         Date todayDate = Calendar.getInstance().getTime();
 
+        addAlmostDealToDay(todayDate, almostDeal);
+    }
+
+    public void addAlmostDealToDay(Date day, String almostDeal)
+    {
         if(days.size() != 0)
         {
-            if(!days.get(0).equalsToDate(todayDate))
+            if(!days.get(0).equalsToDate(day))
             {
-                days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+                days.add(0, new RowDayModel(day.getDate(), day.getDay(), day.getMonth(), day.getYear() + 1900,
                         null, null, null));
             }
 
@@ -131,7 +146,7 @@ public class MyDaysFragment extends Fragment
         }
         else
         {
-            days.add(0, new RowDayModel(todayDate.getDate(), todayDate.getDay(),todayDate.getMonth(), todayDate.getYear() + 1900,
+            days.add(0, new RowDayModel(day.getDate(), day.getDay(), day.getMonth(), day.getYear() + 1900,
                     null, null, null));
 
             days.get(0).addAlmostDeals(almostDeal);

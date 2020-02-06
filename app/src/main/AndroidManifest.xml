@@ -44,7 +44,11 @@
                 <action android:name="onNotifyButton" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".GoalNotification" />
+
+        <receiver android:name=".GoalNotificationReceiver"
+            android:enabled="true"
+            android:exported="true"/>
+
     </application>
 
 </manifest>

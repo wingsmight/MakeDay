@@ -2,45 +2,70 @@ package com.wingsmight.makeday;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.AlarmManager;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wingsmight.makeday.Growth.Goals.GoalsTabAdapter;
 import com.wingsmight.makeday.MyDays.MyDaysFragment;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class GoalCheckingActivity extends AppCompatActivity
 {
     private static AlertDialog alertDialog;
-    private static Handler notifyHandler;
     private static String goalLabel;
 
     private static MyDaysFragment myDaysFragment;
+
+    private Date day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.transparent_layout);
 
+        day = Calendar.getInstance().getTime();
         show();
+    }
+
+    public static void setEveningSkillNotify(Context context, Calendar eveningDate)
+    {
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        MyDaysFragment myDaysFragmentTest = ((MyDaysFragment) (fragmentManager.findFragmentByTag("1")));
+        if (myDaysFragmentTest != null)
+        {
+            myDaysFragment = myDaysFragmentTest;
+        }
+
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, GoalNotificationReceiver.class);
+
+        int requestCode = 1011;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,0);
+
+        //Устанавливаем интервал срабатывания в 1 минуту
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, eveningDate.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
+    private void closeWindow()
+    {
+        this.finish();
     }
 
     public void show()
@@ -62,6 +87,7 @@ public class GoalCheckingActivity extends AppCompatActivity
             {
                 goalIndex = 0;
                 //setEveningSkillNotify(context);
+                closeWindow();
             }
         });
 
@@ -76,24 +102,13 @@ public class GoalCheckingActivity extends AppCompatActivity
 
 //        HandlerThread handlerThread = new HandlerThread("background-thread");
 //        handlerThread.start();
-//        notifyHandler = new Handler(handlerThread.getLooper());
+//        Handler notifyHandler = new Handler(handlerThread.getLooper());
 //        notifyHandler.removeCallbacksAndMessages(null);
 //        notifyHandler.post(new Runnable() {
 //            public void run() {
 //                alertDialog.show();
 //            }
 //        });
-    }
-
-    public void showEveryEvening(Context context)
-    {
-        AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, GoalNotification.class);
-        //intent.putExtra(ONE_TIME, Boolean.FALSE);//Задаем параметр интента
-        int requestCode = 1011;
-        PendingIntent pi = PendingIntent.getBroadcast(context,requestCode, intent,0);
-        //Устанавливаем интервал срабатывания в 1 минуту.
-        manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),60*1000,pi);
     }
 
     private int goalIndex = 0;
@@ -135,7 +150,7 @@ public class GoalCheckingActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                myDaysFragment.addDoneDealToToday(goalLabel);
+                myDaysFragment.addDoneDealToDay(day, goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
                 {
@@ -147,6 +162,8 @@ public class GoalCheckingActivity extends AppCompatActivity
                 {
                     alertDialog.dismiss();
                 }
+
+                myDaysFragment.backgroundSave();
             }
         });
 
@@ -156,7 +173,7 @@ public class GoalCheckingActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                myDaysFragment.addUndoneDealToToday(goalLabel);
+                myDaysFragment.addUndoneDealToDay(day, goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
                 {
@@ -168,6 +185,8 @@ public class GoalCheckingActivity extends AppCompatActivity
                 {
                     alertDialog.dismiss();
                 }
+
+                myDaysFragment.backgroundSave();
             }
         });
 
@@ -177,7 +196,7 @@ public class GoalCheckingActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                myDaysFragment.addAlmostDealToToday(goalLabel);
+                myDaysFragment.addAlmostDealToDay(day, goalLabel);
                 goalIndex++;
                 if(goalIndex < GoalsTabAdapter.goals.size())
                 {
@@ -189,6 +208,8 @@ public class GoalCheckingActivity extends AppCompatActivity
                 {
                     alertDialog.dismiss();
                 }
+
+                myDaysFragment.backgroundSave();
             }
         });
 

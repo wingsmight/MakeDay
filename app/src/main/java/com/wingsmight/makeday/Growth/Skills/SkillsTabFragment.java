@@ -1,6 +1,5 @@
 package com.wingsmight.makeday.Growth.Skills;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -12,8 +11,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
@@ -36,16 +32,12 @@ import com.wingsmight.makeday.DragNDropExpandableListView.DragListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.DragNDropListView;
 import com.wingsmight.makeday.DragNDropExpandableListView.DropListener;
 import com.wingsmight.makeday.DragNDropExpandableListView.RemoveListener;
-import com.wingsmight.makeday.GoalNotification;
 import com.wingsmight.makeday.MainActivity;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 
 public class SkillsTabFragment extends Fragment implements ExpandableListView.OnGroupExpandListener

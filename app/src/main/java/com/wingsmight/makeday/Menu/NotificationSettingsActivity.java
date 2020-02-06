@@ -1,7 +1,5 @@
 package com.wingsmight.makeday.Menu;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -9,20 +7,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.wingsmight.makeday.GoalNotification;
-import com.wingsmight.makeday.Growth.Goals.Goal;
-import com.wingsmight.makeday.Growth.Goals.GoalsTabFragment;
-import com.wingsmight.makeday.Growth.GrowthFragment;
-import com.wingsmight.makeday.Growth.Skills.SkillsTabFragment;
-import com.wingsmight.makeday.MainActivity;
+import com.wingsmight.makeday.GoalCheckingActivity;
+import com.wingsmight.makeday.GoalNotificationReceiver;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TimePickerFragment;
-import com.wingsmight.makeday.Tracker.TimeTracking.TimeTrackingTabFragment;
+
+import java.util.Calendar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 public class NotificationSettingsActivity extends AppCompatActivity
 {
@@ -41,7 +37,9 @@ public class NotificationSettingsActivity extends AppCompatActivity
         toolbar.setDisplayShowHomeEnabled(true);
 
         final TextView morningTime = findViewById(R.id.morningTime);
-        morningTime.setText(SaveLoad.loadString(SaveLoad.defaultSavingPath, "morningTime", "8:00"));
+        morningTime.setText(SaveLoad.loadString(SaveLoad.defaultSavingPath, "morningTime_HoursOfDay", "8")
+                + ":" + SaveLoad.loadString(SaveLoad.defaultSavingPath, "morningTime_Minute", "00"));
+
         morningTime.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -55,7 +53,8 @@ public class NotificationSettingsActivity extends AppCompatActivity
                     {
                         morningTime.setText(hourOfDay + ":" + toHourFormat(minute));
 
-                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "morningTime", morningTime.getText().toString());
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "morningTime_HoursOfDay", Integer.toString(hourOfDay));
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "morningTime_Minute", toHourFormat(minute));
                     }
                 });
                 timePickerDialog.show(getSupportFragmentManager(), "time picker");
@@ -64,7 +63,9 @@ public class NotificationSettingsActivity extends AppCompatActivity
 
         final Context context = this;
         final TextView eveningTime = findViewById(R.id.eveningTime);
-        eveningTime.setText(SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime", "22:00"));
+        eveningTime.setText(SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime_HoursOfDay", "22")
+                + ":" + SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime_Minute", "00"));
+
         eveningTime.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -78,9 +79,20 @@ public class NotificationSettingsActivity extends AppCompatActivity
                     {
                         eveningTime.setText(hourOfDay + ":" + toHourFormat(minute));
 
-                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "eveningTime", eveningTime.getText().toString());
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "eveningTime_HoursOfDay", Integer.toString(hourOfDay));
+                        SaveLoad.saveString(SaveLoad.defaultSavingPath, "eveningTime_Minute", toHourFormat(minute));
 
-                        GoalNotification.setEveningSkillNotify(context);
+                        Calendar eveningDate = Calendar.getInstance();
+                        eveningDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        eveningDate.set(Calendar.MINUTE, minute);
+                        eveningDate.set(Calendar.SECOND, 0);
+
+                        if(eveningDate.getTimeInMillis() < System.currentTimeMillis())
+                        {
+                            eveningDate.setTimeInMillis(eveningDate.getTimeInMillis() + 86400000);
+                        }
+
+                        GoalCheckingActivity.setEveningSkillNotify(context, eveningDate);
                     }
                 });
                 timePickerDialog.show(getSupportFragmentManager(), "time picker");

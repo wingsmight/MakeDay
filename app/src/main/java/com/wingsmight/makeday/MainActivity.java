@@ -15,12 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.wingsmight.makeday.Growth.GrowthFragment;
 import com.wingsmight.makeday.Menu.MenuFragment;
 import com.wingsmight.makeday.MyDays.MyDaysFragment;
+import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.Tracker.TrackerFragment;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity
     final FragmentManager fragmentManager = getSupportFragmentManager();
     Fragment active = fragment1;
 
+    //public static boolean isAppInForeground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,8 +48,6 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
 
         SetupBottomNavigationView();
-
-
     }
 
     @Override
@@ -54,20 +55,20 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPostCreate(savedInstanceState);
 
-        //GoalNotification.setEveningSkillNotify(this);
-        startLoopingGoalNotify();
-    }
+        int hourOfDay = Integer.valueOf(SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime_HoursOfDay", "22"));
+        int minute =  Integer.valueOf(SaveLoad.loadString(SaveLoad.defaultSavingPath, "eveningTime_Minute", "00"));
 
-    private void startLoopingGoalNotify()
-    {
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, GoalNotification.class);
-        //intent.putExtra(ONE_TIME, Boolean.FALSE);//Задаем параметр интента
-        int requestCode = 1011;
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,0);
+        Calendar eveningDate = Calendar.getInstance();
+        eveningDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        eveningDate.set(Calendar.MINUTE, minute);
+        eveningDate.set(Calendar.SECOND, 0);
 
-        //Устанавливаем интервал срабатывания в 1 минуту
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),1 * 10 * 1000, pendingIntent);
+        if(eveningDate.getTimeInMillis() < System.currentTimeMillis())
+        {
+            eveningDate.setTimeInMillis(eveningDate.getTimeInMillis() + 86400000);
+        }
+
+        GoalCheckingActivity.setEveningSkillNotify(this, eveningDate);
     }
 
     @Override
