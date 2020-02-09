@@ -5,19 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
-public class GoalNotificationReceiver extends BroadcastReceiver
+public class TimeTrackingReceiver extends BroadcastReceiver
 {
     @Override
     public void onReceive(Context context, Intent intent)
     {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock= powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"YOUR TAG1");
+        PowerManager.WakeLock wakeLock= powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"YOUR TAG2");
 
 //Осуществляем блокировку
         wakeLock.acquire();
 
 //Здесь можно делать обработку.
-        intent = new Intent(context, GoalNotificationService.class);
+        intent = new Intent(context, TimeTrackingService.class);
         context.startService(intent);
 
 //Разблокируем поток.

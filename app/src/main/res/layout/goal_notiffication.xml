@@ -63,7 +63,8 @@
                 android:layout_margin="5dp"
                 android:textSize="9sp"
                 android:text="Да"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/white"
                 />
 
             <Button
@@ -74,7 +75,8 @@
                 android:layout_margin="5dp"
                 android:textSize="9sp"
                 android:text="нет"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/white"
                 />
 
             <Button
@@ -85,7 +87,8 @@
                 android:layout_margin="5dp"
                 android:textSize="9sp"
                 android:text="Частично"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/white"
                 />
 
         </LinearLayout>
@@ -107,7 +110,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/Skip"
-
+                android:textColor="@color/grey"
                 />
 
             <Button
@@ -117,7 +120,8 @@
                 android:layout_height="45dp"
                 android:layout_margin="5dp"
                 android:text="Готово"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/white"
                 />
 
         </LinearLayout>

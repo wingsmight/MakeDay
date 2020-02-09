@@ -7,12 +7,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Tracker.TimeTracking.TimeTrackingTabFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/timeTrackerRecyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/timeTrackerRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/launchButton"

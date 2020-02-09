@@ -1,8 +1,9 @@
 package com.wingsmight.makeday.Tracker;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Event extends TimeInterval
+public class Event extends TimeInterval implements Serializable
 {
     private String eventText;
 

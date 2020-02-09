@@ -7,8 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.wingsmight.makeday.GoalCheckingActivity;
-import com.wingsmight.makeday.GoalNotificationReceiver;
+import com.wingsmight.makeday.GoalNotificationService;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TimePickerFragment;
@@ -18,7 +17,6 @@ import java.util.Calendar;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 public class NotificationSettingsActivity extends AppCompatActivity
 {
@@ -92,7 +90,7 @@ public class NotificationSettingsActivity extends AppCompatActivity
                             eveningDate.setTimeInMillis(eveningDate.getTimeInMillis() + 86400000);
                         }
 
-                        GoalCheckingActivity.setEveningSkillNotify(context, eveningDate);
+                        GoalNotificationService.setEveningSkillNotify(context, eveningDate);
                     }
                 });
                 timePickerDialog.show(getSupportFragmentManager(), "time picker");

@@ -1,50 +1,43 @@
 package com.wingsmight.makeday.Tracker.TimeTracking;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.app.RemoteInput;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
-import android.view.Gravity;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.wingsmight.makeday.SavingSystem.SaveLoad;
 import com.wingsmight.makeday.TabName;
 import com.wingsmight.makeday.R;
 import com.wingsmight.makeday.TimePickerFragment;
+import com.wingsmight.makeday.TimeTrackingService;
 import com.wingsmight.makeday.Tracker.Event;
-import com.wingsmight.makeday.Tracker.ReceiveNotifyAnswer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +51,7 @@ public class TimeTrackingTabFragment extends Fragment
     private RecyclerView recyclerView;
     private static ArrayList<TimeTrackingDay> timeTrackingDays = new ArrayList<>();
     private static TimeTrackingTabAdapter timeTrackingTabAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     @Override
@@ -88,7 +82,89 @@ public class TimeTrackingTabFragment extends Fragment
                 setLaunchSettings(view);
             }
         });
+
+        getActivity().registerReceiver(mMessageReceiver, new IntentFilter(TimeTrackingService.INTENT_FILTER));
+
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh_items);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateLastItemsBySharedPref();
+                clearLastEvents();
+
+                timeTrackingTabAdapter.notifyDataSetChanged();
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mSwipeRefreshLayout.isRefreshing()) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    }
+                }, 1000);
+            }
+        });
+
     }
+
+    private void updateLastItemsByBroadcast(Intent intent)
+    {
+        String message = intent.getStringExtra("lastEvents");
+        ArrayList<Event> lastEvents;
+        if(message != "")
+        {
+            lastEvents = new Gson().fromJson(message, new TypeToken<ArrayList<Event>>(){}.getType());
+        }
+        else
+        {
+            lastEvents = null;
+        }
+
+        if(lastEvents != null)
+        {
+            addEvents(lastEvents);
+        }
+    }
+
+    private void updateLastItemsBySharedPref()
+    {
+        ArrayList<Event> lastEvents = loadLastEvents();
+
+        if(lastEvents != null)
+        {
+            addEvents(lastEvents);
+        }
+    }
+
+    private ArrayList<Event> loadLastEvents()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editorSave = sharedPreferences.edit();
+
+        String jsonEvent = sharedPreferences.getString("lastEvents", "");
+        if(jsonEvent == "")
+        {
+            return null;
+        }
+        else
+        {
+            return new Gson().fromJson(jsonEvent, new TypeToken<ArrayList<Event>>(){}.getType());
+        }
+    }
+
+    private void clearLastEvents()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editorSave = sharedPreferences.edit();
+
+        editorSave.putString("lastEvents", "");
+        editorSave.apply();
+
+        lastEvents = new ArrayList<>();
+    }
+
+    private ArrayList<Event> lastEvents = new ArrayList<>();
 
     private TextView startTrackingTime;
     private TextView finishTrackingTime;
@@ -116,7 +192,10 @@ public class TimeTrackingTabFragment extends Fragment
                 }
                 else
                 {
-                    pullNotification();
+                    long trackingInterval = loadTrackingInterval();
+
+                    TimeTrackingService.pullNotification(getContext(), trackingInterval, Calendar.getInstance().getTimeInMillis(), null);
+
                     Toast.makeText(getContext(), "Уведомления настроены", Toast.LENGTH_SHORT).show();
                     popupDialog.dismiss();
                 }
@@ -149,11 +228,29 @@ public class TimeTrackingTabFragment extends Fragment
                         String startTrackingTimeString = hourOfDay + ":" + toHourFormat(minute);
                         SaveLoad.saveString(SaveLoad.defaultSavingPath, "startTrackingTime", startTrackingTimeString);
                         startTrackingTime.setText(startTrackingTimeString);
+
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                        SharedPreferences.Editor editorSave = sharedPreferences.edit();
+
+                        Date startDate = new Date(Calendar.getInstance().getTimeInMillis());
+                        startDate.setHours(hourOfDay);
+                        startDate.setMinutes(minute);
+                        editorSave.putLong("startMillisec", startDate.getTime());
+                        editorSave.apply();
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "time picker");
             }
         });
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editorSave = sharedPreferences.edit();
+
+        Date startDate = new Date(Calendar.getInstance().getTimeInMillis());
+        startDate.setHours(8);
+        startDate.setMinutes(0);
+        editorSave.putLong("startMillisec", startDate.getTime());
+
 
         finishTrackingTime = dialogView.findViewById(R.id.finishTrackingTime);
 
@@ -181,11 +278,27 @@ public class TimeTrackingTabFragment extends Fragment
                         String FinishTrackingTimeString = hourOfDay + ":" + toHourFormat(minute);
                         SaveLoad.saveString(SaveLoad.defaultSavingPath, "finishTrackingTime", FinishTrackingTimeString);
                         finishTrackingTime.setText(FinishTrackingTimeString);
+
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                        SharedPreferences.Editor editorSave = sharedPreferences.edit();
+
+                        Date finishDate = new Date(Calendar.getInstance().getTimeInMillis());
+                        finishDate.setHours(hourOfDay);
+                        finishDate.setMinutes(minute);
+                        editorSave.putLong("finishMillisec", finishDate.getTime());
+                        editorSave.apply();
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "time picker");
             }
         });
+
+        Date finishDate = new Date(Calendar.getInstance().getTimeInMillis());
+        finishDate.setHours(22);
+        finishDate.setMinutes(0);
+        editorSave.putLong("finishMillisec", finishDate.getTime());
+
+        editorSave.apply();
 
         Spinner spinner = dialogView.findViewById(R.id.intervalRequest);
 
@@ -194,6 +307,8 @@ public class TimeTrackingTabFragment extends Fragment
         userList.add(new IntervalTrackingTime(30));
         userList.add(new IntervalTrackingTime(60));
         userList.add(new IntervalTrackingTime(90));
+
+        saveTrackingInterval(userList.get(0).getMinute() * 60 * 1000);
 
         ArrayAdapter<IntervalTrackingTime> adapter = new ArrayAdapter<>(getContext(), R.layout.interval_request_spinner_item, userList);
         adapter.setDropDownViewResource(R.layout.interval_request_spinner_dropdown_item);
@@ -204,7 +319,7 @@ public class TimeTrackingTabFragment extends Fragment
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 IntervalTrackingTime interval = (IntervalTrackingTime)parent.getSelectedItem();
-                displayUserData(interval);
+                saveTrackingInterval(interval.getMinute() * 60 * 1000);
             }
 
             @Override
@@ -214,193 +329,59 @@ public class TimeTrackingTabFragment extends Fragment
         });
     }
 
-    public static IntervalTrackingTime intervalTrackingTime;
-    private void displayUserData(IntervalTrackingTime interval)
+    private long loadTrackingInterval()
     {
-        intervalTrackingTime = interval;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return sharedPreferences.getLong("trackingInterval", 1000 * 60 * 15);
     }
 
-    AlertDialog alert;
-    Handler notifyHandler;
-    public void pullNotification()
+    private void saveTrackingInterval(long trackingInterval)
     {
-        Date startDate = Calendar.getInstance().getTime();
-        startDate.setHours(startHour);
-        startDate.setMinutes(startMinutes);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("trackingInterval", trackingInterval);
 
-        Date finishDate = Calendar.getInstance().getTime();
-        finishDate.setHours(finishHour);
-        finishDate.setMinutes(finishMinutes);
+        editor.apply();
+    }
 
-
-        int timeDiff = intervalTrackingTime.getMinute();
-        long millisecondsDiff = timeDiff * 60000;
-
-        Date beforeDate = Calendar.getInstance().getTime();
-        int beforeHour = beforeDate.getHours();
-        int beforeMinutes = beforeDate.getMinutes();;
-
-        Date afterDate = new Date(Calendar.getInstance().getTimeInMillis() + millisecondsDiff);
-        int afterHour = afterDate.getHours();
-        int afterMinutes = afterDate.getMinutes();
-
-        long currentMillisTime = Calendar.getInstance().getTimeInMillis();
-        long finishMillisTime = finishDate.getTime();
-
-        long millisTimeToFinish = finishMillisTime - currentMillisTime;
-        if (millisTimeToFinish < 1000)
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent)
         {
-            long nextDayStartTime = startDate.getTime() + 86400000;
-            millisecondsDiff = nextDayStartTime - Calendar.getInstance().getTimeInMillis();//Notify at next day
+            updateLastItemsByBroadcast(intent);
+
+            clearLastEvents();
+
+            timeTrackingTabAdapter.notifyDataSetChanged();
         }
-        else if(millisTimeToFinish <= millisecondsDiff)
+    };
+
+    @Override
+    public void onResume()
+    {
+        updateLastItemsBySharedPref();
+        clearLastEvents();
+
+        timeTrackingTabAdapter.notifyDataSetChanged();
+
+        super.onResume();
+    }
+
+    public void addEvents(ArrayList<Event> events)
+    {
+        if(events == null || events.size() == 0)
         {
-            if(millisTimeToFinish >= millisecondsDiff / 2)
-            {
-                millisecondsDiff = millisTimeToFinish;
-            }
-            else
-            {
-                long nextDayStartTime = startDate.getTime() + 86400000;
-                millisecondsDiff = nextDayStartTime - Calendar.getInstance().getTimeInMillis();//Notify at next day
-            }
+            return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        View dialogView = createDialogView(beforeHour, beforeMinutes, afterHour, afterMinutes);
-
-        builder.setView(dialogView);
-        alert = builder.create();
-        alert.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alert.getWindow().setGravity(Gravity.TOP);
-
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        Window window = alert.getWindow();
-        lp.copyFrom(window.getAttributes());
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        window.setAttributes(lp);
-
-        notifyHandler = new Handler();
-        notifyHandler.removeCallbacksAndMessages(null);
-        notifyHandler.postDelayed(new Runnable() {
-            public void run() {
-                alert.show();
-            }
-        }, millisecondsDiff);
-    }
-
-    private View createDialogView(int beforeHours, int beforeMinutes, int afterHours, int afterMinutes)
-    {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View dialogView = inflater.inflate(R.layout.notification_expanded, null);
-        ((TextView)(dialogView.findViewById(R.id.WhatWasYouDoing))).setText("Чем занимались с " + beforeHours + ":" + minutesToFullFormat(Integer.toString(beforeMinutes))
-                + " до " + afterHours + ":" + minutesToFullFormat(Integer.toString(afterMinutes)) + "?");
-
-        Button[] notifyButtons = new Button[6];
-        notifyButtons[0] = dialogView.findViewById(R.id.notifyButton1);
-        notifyButtons[1] = dialogView.findViewById(R.id.notifyButton2);
-        notifyButtons[2] = dialogView.findViewById(R.id.notifyButton3);
-        notifyButtons[3] = dialogView.findViewById(R.id.notifyButton4);
-        notifyButtons[4] = dialogView.findViewById(R.id.notifyButton5);
-        notifyButtons[5] = dialogView.findViewById(R.id.notifyButton6);
-
-        for (Button notifyButton : notifyButtons)
+        for (Event event : events)
         {
-            notifyButton.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-
-                    clickOnEventButton((Button)v);
-                }
-            });
-        }
-
-        ImageButton sendButton = dialogView.findViewById(R.id.sendEventButton);
-        final EditText sendEventEditText = dialogView.findViewById(R.id.sendEventEditText);
-        sendButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                clickOnEventSendButton(sendEventEditText.getText().toString());
-            }
-        });
-
-        return dialogView;
-    }
-
-    public void clickOnEventButton(Button buttonView)
-    {
-        alert.dismiss();
-
-        String eventText = buttonView.getText().toString();
-
-        Date date = Calendar.getInstance().getTime();
-
-        int timeDiff = TimeTrackingTabFragment.intervalTrackingTime.getMinute();
-        long millisecondsDiff = timeDiff * 60000;
-        long beforeDateTime = date.getTime() - millisecondsDiff;
-        Date beforeDate = new Date(beforeDateTime);
-        int beforeHours = beforeDate.getHours();
-        int beforeMinutes = beforeDate.getMinutes();
-
-        TimeTrackingTabFragment.addEvent(new Event(date, beforeHours, beforeMinutes, eventText));
-
-        pullNotification();
-    }
-
-    public void clickOnEventSendButton(String eventText)
-    {
-        alert.dismiss();
-
-        Date date = Calendar.getInstance().getTime();
-
-        int timeDiff = TimeTrackingTabFragment.intervalTrackingTime.getMinute();
-        long millisecondsDiff = timeDiff * 60000;
-        long beforeDateTime = date.getTime() - millisecondsDiff;
-        Date beforeDate = new Date(beforeDateTime);
-        int beforeHours = beforeDate.getHours();
-        int beforeMinutes = beforeDate.getMinutes();
-
-        TimeTrackingTabFragment.addEvent(new Event(date, beforeHours, beforeMinutes, eventText));
-
-        pullNotification();
-    }
-
-
-    private String minutesToFullFormat(String shortMinutes)
-    {
-        if(shortMinutes.length() == 1)
-        {
-            return "0" + shortMinutes;
-        }
-        else
-        {
-            return shortMinutes;
+            addEvent(event);
         }
     }
 
-    private static NotificationManagerCompat notificationManager;
-    public static void cancelNotification(int id)
-    {
-        if(notificationManager != null)
-        {
-            notificationManager.cancel(id);
-        }
-    }
 
-    private PendingIntent getPendingSelfIntent(Context context, String action) {
-        Intent intent = new Intent(context, ReceiveNotifyAnswer.class);
-        intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
-    }
-
-    public static void addEvent(Event event)
+    public void addEvent(Event event)
     {
         int size = timeTrackingDays.size();
         if(size != 0)

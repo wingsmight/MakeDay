@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wingsmight.makeday">
+    package="com.wingsmight.makeday"
+    android:installLocation="internalOnly"
+    >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -34,20 +37,58 @@
 
         <activity android:name=".Menu.NotificationSettingsActivity" />
 
-        <activity android:name=".GoalCheckingActivity"
-            android:theme="@style/Theme.Transparent"
-            android:label=""
-            />
-
-        <receiver android:name=".Tracker.ReceiveNotifyAnswer">
+        <receiver android:name="GoalNotificationReceiver"
+            android:enabled="true"
+            android:process=":remote"
+            android:directBootAware="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
-                <action android:name="onNotifyButton" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".GoalNotificationReceiver"
+        <service android:name="GoalNotificationService"
             android:enabled="true"
-            android:exported="true"/>
+            android:process=":remote"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+
+
+
+        <receiver android:name="TimeTrackingReceiver"
+            android:enabled="true"
+            android:process=":remote"
+            android:directBootAware="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="TimeTrackingService"
+            android:enabled="true"
+            android:process=":remote"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
     </application>
 

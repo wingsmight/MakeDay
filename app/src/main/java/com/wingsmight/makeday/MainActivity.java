@@ -13,8 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.wingsmight.makeday.Growth.GrowthFragment;
 import com.wingsmight.makeday.Menu.MenuFragment;
@@ -30,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     final Fragment fragment2 = new TrackerFragment();
     final Fragment fragment3 = new GrowthFragment();
     final Fragment fragment4 = new MenuFragment();
-    final FragmentManager fragmentManager = getSupportFragmentManager();
+    FragmentManager fragmentManager;// = getSupportFragmentManager();
     Fragment active = fragment1;
 
     //public static boolean isAppInForeground;
@@ -42,12 +45,20 @@ public class MainActivity extends AppCompatActivity
         context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
+        fragmentManager = getSupportFragmentManager();
+
         fragmentManager.beginTransaction().add(R.id.main_container, fragment4, "4").hide(fragment4).commit();
         fragmentManager.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
         fragmentManager.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
-        fragmentManager.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
+        fragmentManager.beginTransaction().add(R.id.main_container, fragment1, "1").commit();
 
         SetupBottomNavigationView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState)
+    {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
@@ -68,8 +79,11 @@ public class MainActivity extends AppCompatActivity
             eveningDate.setTimeInMillis(eveningDate.getTimeInMillis() + 86400000);
         }
 
-        GoalCheckingActivity.setEveningSkillNotify(this, eveningDate);
+        //eveningDate.setTimeInMillis(eveningDate.getTimeInMillis() + 1000 * 30);//For testing
+
+        GoalNotificationService.setEveningSkillNotify(this, eveningDate);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -130,5 +144,26 @@ public class MainActivity extends AppCompatActivity
     public static Context GetContext()
     {
         return context;
+    }
+
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Для выхода, нажмите НАЗАД ещё раз", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
